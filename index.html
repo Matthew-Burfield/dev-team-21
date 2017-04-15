@@ -15,9 +15,21 @@
         <script>
           var rightPressed = false;
           var leftPressed = false;
+
+          const canvas = document.getElementById("myCanvas");
+          const ctx = canvas.getContext("2d");
+          const characterSprites = new Image();
+
           function gameLoop() {
             window.requestAnimationFrame(gameLoop);
-            setMarioPosition();
+            
+            // Clear the screen
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.closePath();
+
             mario.update();
             mario.render();
           }
@@ -62,20 +74,19 @@
               this.spriteSeparator = options.spriteSeparator;
               this.x = 0;
               this.y = 0;
+              this.faceRight = true;
             },
             moveForward() {
-              if (this.x + 1 < canvas.width) {
-                this.x += 1;
+              if (this.x + 2 < canvas.width) {
+                this.x += 2;
               }
             },
             moveBackward() {
-              if (this.x - 1 > 0) {
-                this.x -= 1;
+              if (this.x - 2 > 0) {
+                this.x -= 2;
               }
             },
             render() {
-              // Clear the canvas
-              this.context.clearRect(this.x, this.y, this.width, this.height);
 
               // Draw the animation
               this.context.drawImage(
@@ -85,10 +96,11 @@
                 this.width,
                 this.height,
                 this.x,
-                this.y,
+                canvas.height - 16,
                 this.width,
                 this.height
               );
+
             },
             update() {
               this.tickCount += 1;
@@ -97,10 +109,12 @@
                 this.tickCount = 0;
 
                 if (rightPressed || leftPressed) {
+
                   if (rightPressed) {
+                    this.spriteStartY = 0;
                     this.moveForward();
-                  }
-                  if (leftPressed) {
+                  } else {
+                    this.spriteStartY = 17;
                     this.moveBackward();
                   }
 
@@ -116,30 +130,18 @@
             },
           };
 
-          const setMarioPosition = () => {
-            if (rightPressed) {
-              mario.moveForward();
-            }
-            if (leftPressed) {
-              mario.moveBackward();
-            }
-          }
 
-
-          const canvas = document.getElementById("myCanvas");
-          canvas.width = 100;
-          canvas.height = 100;
-          const characterSprites = new Image();
           const mario = Object.create(sprite);
+
           mario.init({
-            context: canvas.getContext("2d"),
+            context: ctx,
             width: 16,
             height: 16,
             image: characterSprites,
             numberOfFrames: 4,
-            ticksPerFrame: 10,
-            spriteStartX: 80,
-            spriteStartY: 34,
+            ticksPerFrame: 4,
+            spriteStartX: 1,
+            spriteStartY: 0,
             spriteSeparator: 1,
           });
 
@@ -147,7 +149,7 @@
           characterSprites.addEventListener("load", gameLoop);
           document.addEventListener('keydown', keyDownHandler);
           document.addEventListener('keyup', keyUpHandler);
-          characterSprites.src = "sprites/characters.png";
+          characterSprites.src = "sprites/mario.gif";
         </script>
     </body>
 </html>
