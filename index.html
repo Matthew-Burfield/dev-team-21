@@ -19,6 +19,7 @@
           const canvas = document.getElementById("myCanvas");
           const ctx = canvas.getContext("2d");
           const characterSprites = new Image();
+          const blockSprites = new Image();
 
           function gameLoop() {
             window.requestAnimationFrame(gameLoop);
@@ -29,6 +30,41 @@
             ctx.fillStyle = "white";
             ctx.fill();
             ctx.closePath();
+
+            mario.velX *= friction;
+            mario.velY += gravity;
+
+            boxes.forEach(box => {
+              ctx.drawImage(
+                box.image,
+                box.spriteX,
+                box.spriteY,
+                box.width,
+                box.height,
+                box.x,
+                box.y,
+                box.width,
+                box.height
+              );
+              var dir = collisionDetection(mario, box);
+
+              if (dir === "l" || dir === "r") {
+                mario.velX = 0;
+                mario.jumping = false;
+              } else if (dir === "b") {
+                mario.grounded = true;
+                mario.jumping = false;
+              } else if (dir === "t") {
+                mario.velY *= -1;
+              }
+            });
+
+            if(mario.grounded){
+                mario.velY = 0;
+            }
+            
+            mario.x += mario.velX;
+            mario.y += mario.velY;
 
             mario.update();
             mario.render();
@@ -59,42 +95,89 @@
               default:
             }
           }
+          const friction = 0.8;
+          const gravity = 0.3;
 
+          function collisionDetection(shapeA, shapeB) {
+            // get the vectors to check against
+            var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
+                vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
+                // add the half widths and half heights of the objects
+                hWidths = (shapeA.width / 2) + (shapeB.width / 2),
+                hHeights = (shapeA.height / 2) + (shapeB.height / 2),
+                colDir = null;
+
+            // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+            if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+              // figures out on which side we are colliding (top, bottom, left, or right)
+              var oX = hWidths - Math.abs(vX),
+                  oY = hHeights - Math.abs(vY);
+              if (oX >= oY) {
+                if (vY > 0) {
+                  colDir = "t";
+                  shapeA.y += oY;
+                } else {
+                  colDir = "b";
+                  shapeA.y -= oY;
+                }
+              } else {
+                if (vX > 0) {
+                  colDir = "l";
+                  shapeA.x += oX;
+                } else {
+                  colDir = "r";
+                  shapeA.x -= oX;
+                }
+              }
+            }
+            return colDir;
+        }
           const sprite = {
             init(options) {
-              this.frameIndex = 0;
-              this.tickCount = 0;
-              this.ticksPerFrame = options.ticksPerFrame || 0;
-              this.numberOfFrames = options.numberOfFrames || 1;
-
               this.context = options.context;
               this.width = options.width;
               this.height = options.height;
               this.image = options.image;
+              this.jumping = false;
+              this.grounded = false;
+              this.speed = 3;
+              this.velX = 0;
+              this.velY = 0;
+
+              // Sprite logic
+              this.frameIndex = 0;
+              this.tickCount = 0;
+              this.ticksPerFrame = options.ticksPerFrame || 0;
+              this.numberOfFrames = options.numberOfFrames || 1;
               this.spriteStartX = options.spriteStartX;
               this.spriteStartY = options.spriteStartY;
               this.spriteSeparator = options.spriteSeparator;
-              this.x = 0;
-              this.y = canvas.height - this.height;
+              this.spriteSeparator = options.spriteSeparator;
               this.faceRight = true;
-              this.jumping = false;
-              this.reachedTopOfJump = false;
-              this.jumpHeight = canvas.height - this.height - options.jumpHeight;
+              
+              // Canvas position
+              this.x = 0;
+              this.y = 0;
             },
             moveForward() {
-              if (this.x + 2 < canvas.width - this.width) {
-                this.x += 2;
+              if (this.x + 2 < canvas.width - this.width) { // Don't go off the map
+                if (this.velX < this.speed) {
+                  this.velX++;
+                }
               }
             },
             moveBackward() {
-              if (this.x - 2 > 0) {
-                this.x -= 2;
+              if (this.x - 2 > 0) { // Don't go off the map
+                if (this.velX > -this.speed) {
+                  this.velX--;
+                }
               }
             },
             jump() {
-              if (!mario.jumping) {
-                mario.reachedTopOfJump = false;
-                mario.jumping = true;
+              if (!this.jumping && this.grounded) {
+                this.jumping = true;
+                this.grounded = false;
+                this.velY -= this.speed * 2;
               }
             },
             render() {
@@ -119,20 +202,6 @@
               if (this.tickCount > this.ticksPerFrame) {
                 this.tickCount = 0;
 
-                if (this.jumping) {
-                  if (this.y > this.jumpHeight && !this.reachedTopOfJump) {
-                    this.y -= 2;
-                  } else {
-                    this.reachedTopOfJump = true;
-                    if (this.y < canvas.height - this.height) {
-                      this.y += 2;
-                    } else {
-                      this.reachedTopOfJump = false;
-                      this.jumping = false;
-                    }
-                  }
-                }
-
                 if (rightPressed || leftPressed) {
 
                   if (rightPressed) {
@@ -142,6 +211,9 @@
                     this.spriteStartY = 17;
                     this.moveBackward();
                   }
+
+                  this.velX *= friction;
+                  this.velY += gravity;
 
                   // Check to see if the current frame index is in range
                   if (this.frameIndex < this.numberOfFrames - 1) {
@@ -159,6 +231,26 @@
             },
           };
 
+          
+          const box = {
+            width: 16,
+            height: 16,
+            spriteX: 272,
+            spriteY: 112,
+            image: blockSprites,
+            init(x, y = canvas.height - 16) {
+              this.x = x;
+              this.y = y;
+            }
+          }
+
+          const boxes = [];
+
+          for (let i = 0; i * box.width < canvas.width; i += 1) {
+            const newBox = Object.create(box);
+            newBox.init(i * box.width);
+            boxes.push(newBox);
+          }
 
           const mario = Object.create(sprite);
 
@@ -180,6 +272,7 @@
           document.addEventListener('keydown', keyDownHandler);
           document.addEventListener('keyup', keyUpHandler);
           characterSprites.src = "sprites/mario.gif";
+          blockSprites.src = "sprites/blocks.png";
         </script>
     </body>
 </html>
