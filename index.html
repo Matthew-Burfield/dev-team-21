@@ -13,50 +13,96 @@
         <canvas id="myCanvas" height="100px" width="100px"></canvas>
 
         <script>
-            function gameLoop() {
-              window.requestAnimationFrame(gameLoop);
+          var rightPressed = false;
+          var leftPressed = false;
+          function gameLoop() {
+            window.requestAnimationFrame(gameLoop);
+            setMarioPosition();
+            mario.update();
+            mario.render();
+          }
 
-              mario.update();
-              mario.render();
+          const keyDownHandler = (e) => {
+            switch (e.keyCode) {
+              case 39:
+                rightPressed = true;
+                break;
+              case 37:
+                leftPressed = true;
+                break;
+              default:
             }
+          }
 
-            const sprite = {
-              init(options) {
-                this.frameIndex = 0;
+          const keyUpHandler = (e) => {
+            switch (e.keyCode) {
+              case 39:
+                rightPressed = false;
+                break;
+              case 37:
+                leftPressed = false;
+                break;
+              default:
+            }
+          }
+
+          const sprite = {
+            init(options) {
+              this.frameIndex = 0;
+              this.tickCount = 0;
+              this.ticksPerFrame = options.ticksPerFrame || 0;
+              this.numberOfFrames = options.numberOfFrames || 1;
+
+              this.context = options.context;
+              this.width = options.width;
+              this.height = options.height;
+              this.image = options.image;
+              this.spriteStartX = options.spriteStartX;
+              this.spriteStartY = options.spriteStartY;
+              this.spriteSeparator = options.spriteSeparator;
+              this.x = 0;
+              this.y = 0;
+            },
+            moveForward() {
+              if (this.x + 1 < canvas.width) {
+                this.x += 1;
+              }
+            },
+            moveBackward() {
+              if (this.x - 1 > 0) {
+                this.x -= 1;
+              }
+            },
+            render() {
+              // Clear the canvas
+              this.context.clearRect(this.x, this.y, this.width, this.height);
+
+              // Draw the animation
+              this.context.drawImage(
+                this.image,
+                this.spriteStartX + (this.frameIndex * (this.width + this.spriteSeparator)),
+                this.spriteStartY,
+                this.width,
+                this.height,
+                this.x,
+                this.y,
+                this.width,
+                this.height
+              );
+            },
+            update() {
+              this.tickCount += 1;
+
+              if (this.tickCount > this.ticksPerFrame) {
                 this.tickCount = 0;
-                this.ticksPerFrame = options.ticksPerFrame || 0;
-                this.numberOfFrames = options.numberOfFrames || 1;
 
-                this.context = options.context;
-                this.width = options.width;
-                this.height = options.height;
-                this.image = options.image;
-                this.spriteStartX = options.spriteStartX;
-                this.spriteStartY = options.spriteStartY;
-                this.spriteSeparator = options.spriteSeparator;
-              },
-              render() {
-                // Clear the canvas
-                this.context.clearRect(0, 0, this.width, this.height);
-
-                // Draw the animation
-                this.context.drawImage(
-                  this.image,
-                  this.spriteStartX + (this.frameIndex * (this.width + this.spriteSeparator)),
-                  this.spriteStartY,
-                  this.width,
-                  this.height,
-                  0,
-                  0,
-                  this.width,
-                  this.height
-                );
-              },
-              update() {
-                this.tickCount += 1;
-
-                if (this.tickCount > this.ticksPerFrame) {
-                  this.tickCount = 0;
+                if (rightPressed || leftPressed) {
+                  if (rightPressed) {
+                    this.moveForward();
+                  }
+                  if (leftPressed) {
+                    this.moveBackward();
+                  }
 
                   // Check to see if the current frame index is in range
                   if (this.frameIndex < this.numberOfFrames - 1) {
@@ -66,30 +112,42 @@
                     this.frameIndex = 0;
                   }
                 }
-              },
-            };
+              }
+            },
+          };
+
+          const setMarioPosition = () => {
+            if (rightPressed) {
+              mario.moveForward();
+            }
+            if (leftPressed) {
+              mario.moveBackward();
+            }
+          }
 
 
-            const canvas = document.getElementById("myCanvas");
-            canvas.width = 100;
-            canvas.height = 100;
-            const characterSprites = new Image();
-            const mario = Object.create(sprite);
-            mario.init({
-              context: canvas.getContext("2d"),
-              width: 16,
-              height: 16,
-              image: characterSprites,
-              numberOfFrames: 4,
-              ticksPerFrame: 4,
-              spriteStartX: 80,
-              spriteStartY: 34,
-              spriteSeparator: 1,
-            });
+          const canvas = document.getElementById("myCanvas");
+          canvas.width = 100;
+          canvas.height = 100;
+          const characterSprites = new Image();
+          const mario = Object.create(sprite);
+          mario.init({
+            context: canvas.getContext("2d"),
+            width: 16,
+            height: 16,
+            image: characterSprites,
+            numberOfFrames: 4,
+            ticksPerFrame: 10,
+            spriteStartX: 80,
+            spriteStartY: 34,
+            spriteSeparator: 1,
+          });
 
-            // Start the game loop as soon as the sprite sheet is loaded
-            characterSprites.addEventListener("load", gameLoop);
-            characterSprites.src = "sprites/characters.png";
+          // Start the game loop as soon as the sprite sheet is loaded
+          characterSprites.addEventListener("load", gameLoop);
+          document.addEventListener('keydown', keyDownHandler);
+          document.addEventListener('keyup', keyUpHandler);
+          characterSprites.src = "sprites/characters.png";
         </script>
     </body>
 </html>
