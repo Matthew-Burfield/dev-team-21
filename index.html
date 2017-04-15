@@ -42,6 +42,8 @@
               case 37:
                 leftPressed = true;
                 break;
+              case 38:
+                mario.jump();
               default:
             }
           }
@@ -73,17 +75,26 @@
               this.spriteStartY = options.spriteStartY;
               this.spriteSeparator = options.spriteSeparator;
               this.x = 0;
-              this.y = 0;
+              this.y = canvas.height - this.height;
               this.faceRight = true;
+              this.jumping = false;
+              this.reachedTopOfJump = false;
+              this.jumpHeight = canvas.height - this.height - options.jumpHeight;
             },
             moveForward() {
-              if (this.x + 2 < canvas.width) {
+              if (this.x + 2 < canvas.width - this.width) {
                 this.x += 2;
               }
             },
             moveBackward() {
               if (this.x - 2 > 0) {
                 this.x -= 2;
+              }
+            },
+            jump() {
+              if (!mario.jumping) {
+                mario.reachedTopOfJump = false;
+                mario.jumping = true;
               }
             },
             render() {
@@ -96,7 +107,7 @@
                 this.width,
                 this.height,
                 this.x,
-                canvas.height - 16,
+                this.y,
                 this.width,
                 this.height
               );
@@ -107,6 +118,20 @@
 
               if (this.tickCount > this.ticksPerFrame) {
                 this.tickCount = 0;
+
+                if (this.jumping) {
+                  if (this.y > this.jumpHeight && !this.reachedTopOfJump) {
+                    this.y -= 2;
+                  } else {
+                    this.reachedTopOfJump = true;
+                    if (this.y < canvas.height - this.height) {
+                      this.y += 2;
+                    } else {
+                      this.reachedTopOfJump = false;
+                      this.jumping = false;
+                    }
+                  }
+                }
 
                 if (rightPressed || leftPressed) {
 
@@ -124,6 +149,10 @@
                     this.frameIndex += 1;
                   } else {
                     this.frameIndex = 0;
+                  }
+
+                  if (this.jumping) {
+                    this.frameIndex = 5;
                   }
                 }
               }
@@ -143,6 +172,7 @@
             spriteStartX: 1,
             spriteStartY: 0,
             spriteSeparator: 1,
+            jumpHeight: 45,
           });
 
           // Start the game loop as soon as the sprite sheet is loaded
