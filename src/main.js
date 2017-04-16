@@ -2,26 +2,21 @@ import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
 import { blockSprite } from './sprite';
+import isKeyPressed from './keyHandler'
 
 var keys = [];
           
 
           function gameLoop() {
-            if (keys[38] || keys[32] || keys[87]) {
-              // up arrow or space
-              mario.jump();
-            }
-            if (keys[39] || keys[68]) {
-              mario.moveRight();
-            }
-            if (keys[37] || keys[65]) {
-              mario.moveLeft();
+              
+            if(!isKeyPressed(keys,mario)){
+                mario.stop();
             }
             
             // Clear the screen
             constant.ctx.beginPath();
             constant.ctx.rect(0, 0, constant.canvas.width, constant.canvas.height);
-            constant.ctx.fillStyle = "white";
+            constant.ctx.fillStyle = "blue";
             constant.ctx.fill();
             constant.ctx.closePath();
 
@@ -46,7 +41,7 @@ var keys = [];
 
               if (dir === "l" || dir === "r") {
                 mario.velX = 0;
-                mario.jumping = false;
+                mario.jumping = false; //TODO tweak it a bit, can jump from the wall.
               } else if (dir === "b") {
                 mario.grounded = true;
                 mario.jumping = false;
