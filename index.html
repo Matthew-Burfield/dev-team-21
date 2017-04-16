@@ -10,11 +10,10 @@
     </head>
     <body>
 
-        <canvas id="myCanvas" height="100px" width="100px"></canvas>
+        <canvas id="myCanvas" height="100px" width="400px"></canvas>
 
         <script>
-          var rightPressed = false;
-          var leftPressed = false;
+          var keys = []
 
           const canvas = document.getElementById("myCanvas");
           const ctx = canvas.getContext("2d");
@@ -22,7 +21,16 @@
           const blockSprites = new Image();
 
           function gameLoop() {
-            window.requestAnimationFrame(gameLoop);
+            if (keys[38] || keys[32] || keys[87]) {
+              // up arrow or space
+              mario.jump();
+            }
+            if (keys[39] || keys[68]) {
+              mario.moveRight();
+            }
+            if (keys[37] || keys[65]) {
+              mario.moveLeft();
+            }
             
             // Clear the screen
             ctx.beginPath();
@@ -33,6 +41,8 @@
 
             mario.velX *= friction;
             mario.velY += gravity;
+
+            mario.grounded = false;
 
             boxes.forEach(box => {
               ctx.drawImage(
@@ -46,7 +56,7 @@
                 box.width,
                 box.height
               );
-              var dir = collisionDetection(mario, box);
+              var dir = colCheck(mario, box);
 
               if (dir === "l" || dir === "r") {
                 mario.velX = 0;
@@ -66,72 +76,55 @@
             mario.x += mario.velX;
             mario.y += mario.velY;
 
-            mario.update();
             mario.render();
+            requestAnimationFrame(gameLoop);
           }
 
           const keyDownHandler = (e) => {
-            switch (e.keyCode) {
-              case 39:
-                rightPressed = true;
-                break;
-              case 37:
-                leftPressed = true;
-                break;
-              case 38:
-                mario.jump();
-              default:
-            }
+            keys[e.keyCode] = true;
           }
 
           const keyUpHandler = (e) => {
-            switch (e.keyCode) {
-              case 39:
-                rightPressed = false;
-                break;
-              case 37:
-                leftPressed = false;
-                break;
-              default:
-            }
+            keys[e.keyCode] = false;
           }
+
           const friction = 0.8;
           const gravity = 0.3;
 
-          function collisionDetection(shapeA, shapeB) {
-            // get the vectors to check against
-            var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
-                vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
-                // add the half widths and half heights of the objects
-                hWidths = (shapeA.width / 2) + (shapeB.width / 2),
-                hHeights = (shapeA.height / 2) + (shapeB.height / 2),
-                colDir = null;
+          function colCheck(shapeA, shapeB) {
+              // get the vectors to check against
+              var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
+                  vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
+                  // add the half widths and half heights of the objects
+                  hWidths = (shapeA.width / 2) + (shapeB.width / 2),
+                  hHeights = (shapeA.height / 2) + (shapeB.height / 2),
+                  colDir = null;
 
-            // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
-            if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
-              // figures out on which side we are colliding (top, bottom, left, or right)
-              var oX = hWidths - Math.abs(vX),
-                  oY = hHeights - Math.abs(vY);
-              if (oX >= oY) {
-                if (vY > 0) {
-                  colDir = "t";
-                  shapeA.y += oY;
-                } else {
-                  colDir = "b";
-                  shapeA.y -= oY;
-                }
-              } else {
-                if (vX > 0) {
-                  colDir = "l";
-                  shapeA.x += oX;
-                } else {
-                  colDir = "r";
-                  shapeA.x -= oX;
-                }
+              // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+              if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+                  // figures out on which side we are colliding (top, bottom, left, or right)
+                  var oX = hWidths - Math.abs(vX),
+                      oY = hHeights - Math.abs(vY);
+                  if (oX >= oY) {
+                      if (vY > 0) {
+                          colDir = "t";
+                          shapeA.y += oY;
+                      } else {
+                          colDir = "b";
+                          shapeA.y -= oY;
+                      }
+                  } else {
+                      if (vX > 0) {
+                          colDir = "l";
+                          shapeA.x += oX;
+                      } else {
+                          colDir = "r";
+                          shapeA.x -= oX;
+                      }
+                  }
               }
-            }
-            return colDir;
-        }
+              return colDir;
+          }
           const sprite = {
             init(options) {
               this.context = options.context;
@@ -159,18 +152,18 @@
               this.x = 0;
               this.y = 0;
             },
-            moveForward() {
-              if (this.x + 2 < canvas.width - this.width) { // Don't go off the map
-                if (this.velX < this.speed) {
-                  this.velX++;
-                }
+            moveRight() {
+              if (this.velX < this.speed) {
+                this.velX++;
+                this.spriteStartY = 0;
+                this.update();
               }
             },
-            moveBackward() {
-              if (this.x - 2 > 0) { // Don't go off the map
-                if (this.velX > -this.speed) {
-                  this.velX--;
-                }
+            moveLeft() {
+              if (this.velX > -this.speed) {
+                this.velX--;
+                this.spriteStartY = 17;
+                this.update();
               }
             },
             jump() {
@@ -178,6 +171,7 @@
                 this.jumping = true;
                 this.grounded = false;
                 this.velY -= this.speed * 2;
+                this.update();
               }
             },
             render() {
@@ -202,30 +196,16 @@
               if (this.tickCount > this.ticksPerFrame) {
                 this.tickCount = 0;
 
-                if (rightPressed || leftPressed) {
+                // Check to see if the current frame index is in range
+                if (this.frameIndex < this.numberOfFrames - 1) {
+                  // Go to the next frame
+                  this.frameIndex += 1;
+                } else {
+                  this.frameIndex = 0;
+                }
 
-                  if (rightPressed) {
-                    this.spriteStartY = 0;
-                    this.moveForward();
-                  } else {
-                    this.spriteStartY = 17;
-                    this.moveBackward();
-                  }
-
-                  this.velX *= friction;
-                  this.velY += gravity;
-
-                  // Check to see if the current frame index is in range
-                  if (this.frameIndex < this.numberOfFrames - 1) {
-                    // Go to the next frame
-                    this.frameIndex += 1;
-                  } else {
-                    this.frameIndex = 0;
-                  }
-
-                  if (this.jumping) {
-                    this.frameIndex = 5;
-                  }
+                if (this.jumping) {
+                  this.frameIndex = 5;
                 }
               }
             },
@@ -249,6 +229,14 @@
           for (let i = 0; i * box.width < canvas.width; i += 1) {
             const newBox = Object.create(box);
             newBox.init(i * box.width);
+            boxes.push(newBox);
+          }
+
+          for (let i = 0; i < 5; i += 1) {
+            const newBox = Object.create(box);
+            const startingX = 5 * 16;
+            const y = canvas.height - (4 * 16);
+            newBox.init(startingX + (i * 16), y);
             boxes.push(newBox);
           }
 
