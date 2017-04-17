@@ -1,5 +1,6 @@
 export const canvas = document.getElementById("myCanvas");
 export const ctx = canvas.getContext("2d");
+export const heightToFloor = canvas.height - 8 - 16;
 export const characterSprites = new Image();
 export const blockSprites = new Image();
 export const tileSprites = new Image();

@@ -2,7 +2,8 @@ import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
 import { blockSprite, tileSprite } from './sprite';
-import actionKeyPress from './keyHandler'
+import actionKeyPress from './keyHandler';
+import { bigMountain } from './nonBlockingObjects';
 
 var keys = [];
 var renderList = [mario];
@@ -14,9 +15,28 @@ function gameLoop() {
   // Clear the screen
   constant.ctx.beginPath();
   constant.ctx.rect(0, 0, constant.canvas.width, constant.canvas.height);
-  constant.ctx.fillStyle = "#2196F3";
+  constant.ctx.fillStyle = '#2196F3';
   constant.ctx.fill();
   constant.ctx.closePath();
+
+  /**
+   * Draw non-blocking objects first so blocking objects get painted
+   * on top if required
+   */
+  bigMountain(0, 0).forEach(tile => {
+    constant.ctx.drawImage(
+      tile.image,
+      tile.spriteX,
+      tile.spriteY,
+      tile.width,
+      tile.height,
+      tile.x,
+      tile.y,
+      tile.width,
+      tile.height
+    );
+  });
+  
 
   mario.velX *= constant.friction;
   mario.velY += constant.gravity;
