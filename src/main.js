@@ -2,16 +2,14 @@ import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
 import { blockSprite } from './sprite';
-import isKeyPressed from './keyHandler'
+import actionKeyPress from './keyHandler'
 
 var keys = [];
-          
+var renderList = [mario];
 
           function gameLoop() {
-              
-            if(!isKeyPressed(keys,mario)){
-                mario.stop();
-            }
+            //handle key and check if mario is moving
+            actionKeyPress(keys,mario);
             
             // Clear the screen
             constant.ctx.beginPath();
@@ -57,7 +55,9 @@ var keys = [];
             mario.x += mario.velX;
             mario.y += mario.velY;
 
-            mario.render();
+            renderList.forEach(obj =>{
+                obj.render();
+            } );
             requestAnimationFrame(gameLoop);
           }
 
@@ -94,8 +94,6 @@ var keys = [];
             });
             boxes.push(newBox);
           }
-
-          
 
           // Start the game loop as soon as the sprite sheet is loaded
           window.addEventListener("load", gameLoop);

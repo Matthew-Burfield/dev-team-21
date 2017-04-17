@@ -83,15 +83,16 @@ export const movingSprite = {
                 this.tickCount = 0;
 
                 // Check to see if the current frame index is in range
-                if (!this.moving) {
-                    this.frameIndex = 0;
-                } else if (this.jumping) {
+                 if (this.jumping) {
                     this.frameIndex = 5;
+                     } 
+                     else if(!this.moving) {
+                    this.frameIndex = 0;
                 } else {
                     if (this.frameIndex < this.numberOfFrames - 1) {
                         // Go to the next frame
                         this.frameIndex += 1;
-                    } else {
+                    } else if (!this.singleAnimation){
                         this.frameIndex = 0;
                     }
                 }
@@ -110,7 +111,9 @@ export const blockSprite = {
         this.x = options.x;
         this.y = options.y || canvas.height - 16;
         this.image = options.image;
+        this.breakable = options.breakable | false;
     },
+
     
 
 };
