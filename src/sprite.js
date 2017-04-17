@@ -103,16 +103,17 @@ export const movingSprite = {
 };
 
 export const blockSprite = {
-    width: 16,
-    height: 16,
-    spriteX: 272,
-    spriteY: 112,
-    init(options) {
-        this.x = options.x;
-        this.y = options.y || canvas.height - 16;
-        this.image = options.image;
-        this.breakable = options.breakable | false;
-    },
+   width: 16,
+   height: 16,
+   init(options) {
+   	this.x = options.x;
+    this.y = options.y || canvas.height - 16; //default to a floor block
+	this.spriteX = options.spriteX || 272; // default to brick
+ 	this.spriteY = options.spriteY || 112, // default to brick
+       this.image = options.image;
+       this.breakable = options.breakable | false;
+       this.singleAnimation = options.singleAnimation | true;
+   },
 
     
 
