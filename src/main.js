@@ -33,34 +33,31 @@ function gameLoop() {
     mario.velY += constant.gravity;
     mario.grounded = false;
     boxes.forEach(box => {
-            if(box.delete){
-                boxes.splice(boxes.indexOf(box), 1); //remove it
-               
-            }
+        if (box.delete) {
+            boxes.splice(boxes.indexOf(box), 1); //remove it
+
+        }
         if (box.animate) {
             box.render();
-             box.update();
-        }
-        else {
+            box.update();
+        } else {
             constant.ctx.drawImage(box.image, box.spriteX, box.spriteY, box.width, box.height, box.x, box.y, box.width, box.height);
         }
         var dir = collisionCheck(mario, box);
         if (dir === "l" || dir === "r") {
             mario.velX = 0;
             mario.jumping = false; //TODO tweak it a bit, can jump from the wall.
-        }
-        else if (dir === "b") {
+        } else if (dir === "b") {
             mario.grounded = true;
             mario.jumping = false;
-        }
-        else if (dir === "t") {
+        } else if (dir === "t") {
             box.hit();
-            mario.velY = box.gotBroken? mario.velY: mario.velY*-1;
-            if (box.type == "brick"){
+            mario.velY *= -1;
+            if (box.type == "brick") {
                 box.animate = true;
             }
-            
-        
+
+
         }
     });
     if (mario.grounded) {
@@ -87,9 +84,9 @@ for (let i = 0; i * blockSprite.width < constant.canvas.width; i += 1) {
 function getFloorTile(i, yHeight) {
     const floor = Object.create(blockSprite);
     floor.init({
-        x: i * blockSprite.width
-        , y: constant.canvas.height - yHeight
-    , });
+        x: i * blockSprite.width,
+        y: constant.canvas.height - yHeight,
+    });
     return floor;
 }
 boxes.push(createBlock('question', 16, 5));
@@ -100,32 +97,32 @@ boxes.push(createBlock('question', 23, 5));
 boxes.push(createBlock('brick', 24, 5));
 boxes.push(createBlock('question', 22, 9));
 boxes.push(createTile({
-    width: 32
-    , height: 32
-    , x: 28 * 16
-    , y: constant.canvas.height - ((3 * 16) + 8)
-    , spriteX: 0
-    , spriteY: 128
-    , isBlocking: true
-, }));
+    width: 32,
+    height: 32,
+    x: 28 * 16,
+    y: constant.canvas.height - ((3 * 16) + 8),
+    spriteX: 0,
+    spriteY: 128,
+    isBlocking: true,
+}));
 boxes.push(createTile({
-    width: 32
-    , height: 16
-    , x: 38 * 16
-    , y: constant.canvas.height - ((2 * 16) + 8)
-    , spriteX: 0
-    , spriteY: 144
-    , isBlocking: true
-, }));
+    width: 32,
+    height: 16,
+    x: 38 * 16,
+    y: constant.canvas.height - ((2 * 16) + 8),
+    spriteX: 0,
+    spriteY: 144,
+    isBlocking: true,
+}));
 boxes.push(createTile({
-    width: 32
-    , height: 32
-    , x: 38 * 16
-    , y: constant.canvas.height - ((4 * 16) + 8)
-    , spriteX: 0
-    , spriteY: 128
-    , isBlocking: true
-, }));
+    width: 32,
+    height: 32,
+    x: 38 * 16,
+    y: constant.canvas.height - ((4 * 16) + 8),
+    spriteX: 0,
+    spriteY: 128,
+    isBlocking: true,
+}));
 
 function createBlock(type, numBlocksFromLeft, numBlocksHigh) {
     const box = Object.create(blockSprite);

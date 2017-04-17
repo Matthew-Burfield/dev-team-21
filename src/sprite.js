@@ -122,10 +122,10 @@ export const blockSprite = {
         this.ticksPerFrame = 1;
         this.numberOfFrames = 3;
         this.tickCount = 0;
-        this.frameIndex = 2;
+        this.frameIndex = 1;
         this.gotBroken = true;
     },
-    
+
     update() {
         this.tickCount += 1;
         if (this.tickCount > this.ticksPerFrame) {
@@ -140,7 +140,7 @@ export const blockSprite = {
                 if (this.gotBroken) {
                     this.delete = true;
                 } else {
-                                   this.animate = false;
+                    this.animate = false;
                     this.spriteX += (this.frameIndex * this.width)
                 }
             }
