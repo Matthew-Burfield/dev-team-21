@@ -91,6 +91,7 @@ boxes.push(createBlock('question', 21, 5));
 boxes.push(createBlock('brick', 22, 5));
 boxes.push(createBlock('question', 23, 5));
 boxes.push(createBlock('brick', 24, 5));
+boxes.push(createBlock('question', 22, 9));
 
 boxes.push(createTile({
   width: 32,

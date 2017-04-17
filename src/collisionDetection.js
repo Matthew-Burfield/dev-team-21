@@ -14,18 +14,18 @@ function collisionCheck(shapeA, shapeB) {
             oY = hHeights - Math.abs(vY);
         if (oX >= oY) {
             if (vY > 0) {
-                colDir = "t";
+                colDir = "t"; // top side
                 shapeA.y += oY;
             } else {
-                colDir = "b";
+                colDir = "b"; // bottom side
                 shapeA.y -= oY;
             }
         } else {
             if (vX > 0) {
-                colDir = "l";
+                colDir = "l"; // left side
                 shapeA.x += oX;
             } else {
-                colDir = "r";
+                colDir = "r"; // right side
                 shapeA.x -= oX;
             }
         }

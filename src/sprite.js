@@ -9,7 +9,7 @@ export const movingSprite = {
     this.jumping = false;
     this.grounded = false;
     this.moving = false;
-    this.speed = 3;
+    this.speed = 2.5;
     this.velX = 0;
     this.velY = 0;
 
@@ -49,7 +49,7 @@ export const movingSprite = {
       this.jumping = true;
       this.grounded = false;
       this.moving = true;
-      this.velY -= this.speed * 2;
+      this.velY -= this.speed * 2.55;
       this.update();
     }
   },
