@@ -1,4 +1,4 @@
-import { canvas } from './constants';
+import { canvas, blockSprites, tileSprites } from './constants';
 
 export const movingSprite = {
   init(options) {
@@ -100,13 +100,26 @@ export const movingSprite = {
 export const blockSprite = {
   width: 16,
   height: 16,
+  image: blockSprites,
   init(options) {
     this.x = options.x;
     this.y = options.y || canvas.height - 16; //default to a floor block
-    this.spriteX = options.spriteX || 272; // default to brick
-    this.spriteY = options.spriteY || 112, // default to brick
-    this.image = options.image;
+    this.spriteX = options.spriteX || 80; // default to floor
+    this.spriteY = options.spriteY || 194, // default to floor
     this.breakable = options.breakable | false;
     this.singleAnimation = options.singleAnimation | true;
   },
 };
+
+export const tileSprite = {
+  image: tileSprites,
+  init(options) {
+    this.width = options.width || 16;
+    this.height = options.height || 16;
+    this.x = options.x;
+    this.y = options.y;
+    this.spriteX = options.spriteX;
+    this.spriteY = options.spriteY;
+    this.isBlocking = options.isBlocking || false;
+  }
+}

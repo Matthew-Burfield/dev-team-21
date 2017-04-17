@@ -1,7 +1,7 @@
 import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
-import { blockSprite } from './sprite';
+import { blockSprite, tileSprite } from './sprite';
 import actionKeyPress from './keyHandler'
 
 var keys = [];
@@ -72,24 +72,70 @@ const keyUpHandler = (e) => {
 const boxes = [];
 
 for (let i = 0; i * blockSprite.width < constant.canvas.width; i += 1) {
-  const newBox = Object.create(blockSprite);
-  newBox.init({
-    x: i * blockSprite.width,
-    image: constant.blockSprites,
-  });
-  boxes.push(newBox);
+  boxes.push(getFloorTile(i, 8));
+  boxes.push(getFloorTile(i, 24));
 }
 
-for (let i = 0; i < 5; i += 1) {
-  const newBox = Object.create(blockSprite);
-  const startingX = 5 * 16;
-  const y = constant.canvas.height - (4 * 16);
-  newBox.init({
-    x: startingX + (i * 16),
-    y,
-    image: constant.blockSprites,
+function getFloorTile(i, yHeight) {
+  const floor = Object.create(blockSprite);
+  floor.init({
+    x: i * blockSprite.width,
+    y: constant.canvas.height - yHeight,
   });
-  boxes.push(newBox);
+  return floor;
+}
+
+boxes.push(createBlock('question', 16, 5));
+boxes.push(createBlock('brick', 20, 5));
+boxes.push(createBlock('question', 21, 5));
+boxes.push(createBlock('brick', 22, 5));
+boxes.push(createBlock('question', 23, 5));
+boxes.push(createBlock('brick', 24, 5));
+
+boxes.push(createTile({
+  width: 32,
+  height: 32,
+  x: 28 * 16,
+  y: constant.canvas.height - ((3 * 16) + 8),
+  spriteX: 0,
+  spriteY: 128,
+  isBlocking: true,
+}));
+
+boxes.push(createTile({
+  width: 32,
+  height: 16,
+  x: 38 * 16,
+  y: constant.canvas.height - ((2 * 16) + 8),
+  spriteX: 0,
+  spriteY: 144,
+  isBlocking: true,
+}));
+
+boxes.push(createTile({
+  width: 32,
+  height: 32,
+  x: 38 * 16,
+  y: constant.canvas.height - ((4 * 16) + 8),
+  spriteX: 0,
+  spriteY: 128,
+  isBlocking: true,
+}));
+
+function createBlock(type, numBlocksFromLeft, numBlocksHigh) {
+  const box = Object.create(blockSprite);
+  const x = numBlocksFromLeft * 16;
+  const y = constant.canvas.height - ((numBlocksHigh * 16) + 8);
+  const spriteY = 112;
+  const spriteX = type === 'brick' ? 272 : 80;
+  box.init({ x, y, spriteY, spriteX });
+  return box;
+}
+
+function createTile(options) {
+  const tile = Object.create(tileSprite);
+  tile.init(options);
+  return tile;
 }
 
 // Start the game loop as soon as the sprite sheet is loaded
