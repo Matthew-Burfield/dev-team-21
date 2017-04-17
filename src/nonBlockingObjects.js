@@ -26,9 +26,35 @@ const TILE_SPRITE = {
     x: 144,
     y: 128,
   },
+  BUSH_LEFT_END: {
+    x: 176,
+    y: 144,
+  },
+  BUSH_MIDDLE: {
+    x: 192,
+    y: 144,
+  },
+  BUSH_RIGHT_END: {
+    x: 208,
+    y: 144,
+  },
+  CLOUD_TOP_LEFT: { x: 0, y: 320 },
+  CLOUD_TOP_MIDDLE: { x: 16, y: 320 },
+  CLOUD_TOP_RIGHT: { x: 32, y: 320 },
+  CLOUD_BOTTOM_LEFT: { x: 0, y: 336 },
+  CLOUD_BOTTOM_MIDDLE: { x: 16, y: 336 },
+  CLOUD_BOTTOM_RIGHT: { x: 32, y: 336 }
 };
 
-const nonBlockingObjects = bigMountain(0, 0);
+export const nonBlockingObjects = [
+  ...bigMountain(0, 0),
+  ...bush(176, 0, 3),
+  ...smallMountain(256, 0),
+  ...bush(368, 0, 1),
+  ...cloud(304, 160, 1),
+  ...cloud(432, 128, 3),
+  ...cloud(576, 160, 2)
+];
 
 /**
  * Creates a big non blocking mountain to paint to the background
@@ -36,7 +62,7 @@ const nonBlockingObjects = bigMountain(0, 0);
  * @param {number} startX The bottom left corner coordinate of the mountain
  * @param {number} startY The bottom left corner coordinate of the mountain
  */
-export function bigMountain(startX, startY) {
+function bigMountain(startX, startY) {
   const bottomUpwardSlope = createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE);
   const bottomRightDot = createTileWrapper(startX, startY, 1, 0, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS);
   const bottomCenter = createTileWrapper(startX, startY, 2, 0, TILE_SPRITE.MOUNTAIN_CENTER);
@@ -58,6 +84,39 @@ export function bigMountain(startX, startY) {
     upperDownwardSlope,
     top,
   ];
+}
+
+function smallMountain(startX, startY) {
+  return [createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE),
+    createTileWrapper(startX, startY, 1, 0, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS),
+    createTileWrapper(startX, startY, 2, 0, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE),
+    createTileWrapper(startX, startY, 1, 1, TILE_SPRITE.MOUNTAIN_TOP),
+  ];
+}
+
+function cloud(startX, startY, cloudLength) {
+  const arr = [];
+  arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.CLOUD_BOTTOM_LEFT));
+  arr.push(createTileWrapper(startX, startY, 0, 1, TILE_SPRITE.CLOUD_TOP_LEFT));
+  for (var i = 1; i < cloudLength + 1; i += 1) {
+    arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_MIDDLE));
+    arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_MIDDLE));
+  }
+  arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_RIGHT));
+  arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_RIGHT));
+
+  return arr;
+}
+
+function bush(startX, startY, bushLength) {
+  const arr = [];
+  arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.BUSH_LEFT_END));
+  for (var i = 1; i < bushLength + 1; i += 1) {
+    arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.BUSH_MIDDLE));
+  }
+  arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.BUSH_RIGHT_END));
+
+  return arr;
 }
 
 function createTileWrapper(startX, startY, xDistanceFromFirstTile, yDistanceFromBottomTile, spriteCoords) {

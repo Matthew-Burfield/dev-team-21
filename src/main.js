@@ -3,7 +3,7 @@ import * as constant from './constants';
 import collisionCheck from './collisionDetection';
 import { blockSprite, tileSprite } from './sprite';
 import actionKeyPress from './keyHandler';
-import { bigMountain } from './nonBlockingObjects';
+import { nonBlockingObjects } from './nonBlockingObjects';
 
 var keys = [];
 var renderList = [mario];
@@ -23,7 +23,7 @@ function gameLoop() {
    * Draw non-blocking objects first so blocking objects get painted
    * on top if required
    */
-  bigMountain(0, 0).forEach(tile => {
+  nonBlockingObjects.forEach(tile => {
     constant.ctx.drawImage(
       tile.image,
       tile.spriteX,
