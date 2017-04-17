@@ -14,7 +14,7 @@ var renderList = [mario];
             // Clear the screen
             constant.ctx.beginPath();
             constant.ctx.rect(0, 0, constant.canvas.width, constant.canvas.height);
-            constant.ctx.fillStyle = "blue";
+            constant.ctx.fillStyle = "#2196F3";
             constant.ctx.fill();
             constant.ctx.closePath();
 
