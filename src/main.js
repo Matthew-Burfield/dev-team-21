@@ -14,6 +14,7 @@ from './nonBlockingObjects';
 const keys = [];
 const boxes = [];
 
+
 function createBlock(type, numBlocksFromLeft, numBlocksHigh) {
   const box = Object.create(blockSprite);
   const x = numBlocksFromLeft * 16;
