@@ -125,7 +125,9 @@ export const blockSprite = {
         this.frameIndex = 1;
         this.gotBroken = true;
     },
-
+    animate() {
+        this.animate = true;
+    },
     update() {
         this.tickCount += 1;
         if (this.tickCount > this.ticksPerFrame) {
