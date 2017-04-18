@@ -27,6 +27,7 @@ function createBlock(type, numBlocksFromLeft, numBlocksHigh) {
   return box;
 }
 
+
 function createTile(options) {
   const tile = Object.create(tileSprite);
   tile.init(options);
