@@ -2,7 +2,7 @@ import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
 import {
-    blockSprite, tileSprite,
+    tileSprite, brick, questionBlock, blockSprite,
 }
 from './sprite';
 import actionKeyPress from './keyHandler';
@@ -14,17 +14,28 @@ from './nonBlockingObjects';
 const keys = [];
 const boxes = [];
 
+function getSpriteOptions(numBlocksFromLeft, numBlocksHigh, spriteX, spriteY) {
+  return {
+    x: numBlocksFromLeft * 16,
+    y: constant.canvas.height - ((numBlocksHigh * 16) + 8),
+    spriteX,
+    spriteY
+  };
+}
 
-function createBlock(type, numBlocksFromLeft, numBlocksHigh) {
-  const box = Object.create(blockSprite);
-  const x = numBlocksFromLeft * 16;
-  const y = constant.canvas.height - ((numBlocksHigh * 16) + 8);
-  const spriteY = 112;
-  const spriteX = type === 'brick' ? 272 : 80;
-  box.init({
-    x, y, spriteY, spriteX, type,
-  });
-  return box;
+
+function createQuestionBlock(numBlocksFromLeft, numBlocksHigh) {
+  const questionBlockSprite = Object.create(questionBlock);
+  questionBlockSprite.initQuestionBlock(
+    getSpriteOptions(numBlocksFromLeft, numBlocksHigh, 80, 112)
+  );
+  return questionBlockSprite;
+}
+
+function createBrick(numBlocksFromLeft, numBlocksHigh) {
+  const brickSprite = Object.create(brick);
+  brickSprite.initBrick(getSpriteOptions(numBlocksFromLeft, numBlocksHigh, 272, 112));
+  return brickSprite;
 }
 
 
@@ -39,6 +50,7 @@ function getFloorTile(i, yHeight) {
   floor.init({
     x: i * blockSprite.width,
     y: constant.canvas.height - yHeight,
+    numberOfFrames: 1,
   });
   return floor;
 }
@@ -57,7 +69,8 @@ function gameLoop() {
    * on top if required
    */
   nonBlockingObjects.forEach((tile) => {
-    constant.ctx.drawImage(tile.image,
+    constant.ctx.drawImage(
+      tile.image,
       tile.spriteX,
       tile.spriteY,
       tile.width,
@@ -65,7 +78,7 @@ function gameLoop() {
       tile.x,
       tile.y,
       tile.width,
-      tile.height,
+      tile.height
     );
   });
   mario.velX *= constant.friction;
@@ -75,22 +88,11 @@ function gameLoop() {
     if (box.delete) {
       boxes.splice(boxes.indexOf(box), 1); // remove it
     }
-    if (box.animate) {
-      box.render();
+    if (box.update) {
       box.update();
-    } else {
-      constant.ctx.drawImage(
-        box.image,
-        box.spriteX,
-        box.spriteY,
-        box.width,
-        box.height,
-        box.x,
-        box.y,
-        box.width,
-        box.height,
-      );
     }
+    box.render();
+
     const direction = collisionCheck(mario, box);
     if (direction === 'l' || direction === 'r') {
       mario.velX = 0;
@@ -102,7 +104,7 @@ function gameLoop() {
       box.hit();
       mario.velY *= -1;
       if (box.type === 'brick') {
-        box.animate();
+        box.setAnimate(true);
       }
     }
   });
@@ -113,7 +115,7 @@ function gameLoop() {
   mario.y += mario.velY;
   mario.render();
   requestAnimationFrame(gameLoop);
-}
+} // End Gameloop
 
 const keyDownHandler = (e) => {
   keys[e.keyCode] = true;
@@ -128,13 +130,13 @@ for (let i = 0; i * blockSprite.width < constant.canvas.width; i += 1) {
   boxes.push(getFloorTile(i, 24));
 }
 
-boxes.push(createBlock('question', 16, 5));
-boxes.push(createBlock('brick', 20, 5));
-boxes.push(createBlock('question', 21, 5));
-boxes.push(createBlock('brick', 22, 5));
-boxes.push(createBlock('question', 23, 5));
-boxes.push(createBlock('brick', 24, 5));
-boxes.push(createBlock('question', 22, 9));
+boxes.push(createQuestionBlock(16, 5));
+boxes.push(createBrick(20, 5));
+boxes.push(createQuestionBlock(21, 5));
+boxes.push(createBrick(22, 5));
+boxes.push(createQuestionBlock(23, 5));
+boxes.push(createBrick(24, 5));
+boxes.push(createQuestionBlock(22, 9));
 boxes.push(createTile({
   width: 32,
   height: 32,
