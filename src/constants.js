@@ -9,3 +9,10 @@ export const gravity = 0.3;
 characterSprites.src = 'sprites/mario.gif';
 blockSprites.src = 'sprites/blocks.gif';
 tileSprites.src = 'sprites/tileset.png';
+
+export const SURFACE = {
+  RIGHT: 'RIGHT',
+  LEFT: 'LEFT',
+  TOP: 'TOP',
+  BOTTOM: 'BOTTOM'
+};
