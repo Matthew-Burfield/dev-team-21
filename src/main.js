@@ -104,7 +104,7 @@ function gameLoop() {
       mario.jumping = false;
     } else if (direction === constant.SURFACE.TOP) {
       box.hit();
-      mario.velY *= -1;
+      mario.velY *= -0.1;
       if (box.type === 'brick') {
         box.setAnimate(true);
       }
