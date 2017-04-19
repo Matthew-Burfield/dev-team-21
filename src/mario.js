@@ -1,4 +1,4 @@
-import { movingSprite } from './sprite.js';
+import { movingSprite } from './sprite';
 import { ctx, characterSprites } from './constants';
 
 const mario = Object.create(movingSprite);
@@ -15,5 +15,19 @@ mario.init({
   spriteSeparator: 1,
   jumpHeight: 45,
 });
+
+mario.render = function (offsetX) {
+  ctx.drawImage(
+    this.image,
+    this.spriteX + (this.frameIndex * (this.width + (this.spriteSeparator || 0))),
+    this.spriteY,
+    this.width,
+    this.height,
+    this.x - offsetX,
+    this.y,
+    this.width,
+    this.height
+  );
+};
 
 export default mario;

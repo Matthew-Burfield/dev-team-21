@@ -5,14 +5,15 @@ import {
     tileSprite, brick, questionBlock, blockSprite,
 }
 from './sprite';
-import actionKeyPress from './keyHandler';
+import actionKeyPress, { offsetX } from './keyHandler';
 import {
     nonBlockingObjects,
 }
 from './nonBlockingObjects';
 
-const keys = [];
 const boxes = [];
+// how far offset the canvas is
+
 
 function getSpriteOptions(numBlocksFromLeft, numBlocksHigh, spriteX, spriteY) {
   return {
@@ -56,11 +57,14 @@ function getFloorTile(i, yHeight) {
 }
 
 function gameLoop() {
+
   // handle key and check if mario is moving
-  actionKeyPress(keys, mario);
+  actionKeyPress(mario);
   // Clear the screen
+  constant.ctx.save();
+  constant.ctx.translate(offsetX, 0);
   constant.ctx.beginPath();
-  constant.ctx.rect(0, 0, constant.canvas.width, constant.canvas.height);
+  constant.ctx.rect(-offsetX, 0, constant.canvas.width, constant.canvas.height);
   constant.ctx.fillStyle = '#2196F3';
   constant.ctx.fill();
   constant.ctx.closePath();
@@ -68,7 +72,10 @@ function gameLoop() {
    * Draw non-blocking objects first so blocking objects get painted
    * on top if required
    */
-  nonBlockingObjects.forEach((tile) => {
+  const nonBlockingObjectsArray = nonBlockingObjects.filter(item =>
+    (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
+
+  nonBlockingObjectsArray.forEach((tile) => {
     constant.ctx.drawImage(
       tile.image,
       tile.spriteX,
@@ -84,7 +91,11 @@ function gameLoop() {
   mario.velX *= constant.friction;
   mario.velY += constant.gravity;
   mario.grounded = false;
-  boxes.forEach((box) => {
+
+  const blockingObjectsArray = boxes.filter(item =>
+    (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
+
+  blockingObjectsArray.forEach((box) => {
     if (box.delete) {
       boxes.splice(boxes.indexOf(box), 1); // remove it
     }
@@ -93,7 +104,7 @@ function gameLoop() {
     }
     box.render();
 
-    const { direction, correctionY, correctionX } = collisionCheck(mario, box);
+    const { direction, correctionY, correctionX } = collisionCheck(mario, box, offsetX);
     mario.x += correctionX;
     mario.y += correctionY;
     if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
@@ -115,19 +126,12 @@ function gameLoop() {
   }
   mario.x += mario.velX;
   mario.y += mario.velY;
-  mario.render();
+  mario.render(offsetX);
+  constant.ctx.restore();
   requestAnimationFrame(gameLoop);
 } // End Gameloop
 
-const keyDownHandler = (e) => {
-  keys[e.keyCode] = true;
-};
-
-const keyUpHandler = (e) => {
-  keys[e.keyCode] = false;
-};
-
-for (let i = 0; i * blockSprite.width < constant.canvas.width; i += 1) {
+for (let i = 0; i * blockSprite.width < constant.worldLength; i += 1) {
   boxes.push(getFloorTile(i, 8));
   boxes.push(getFloorTile(i, 24));
 }
@@ -169,5 +173,4 @@ boxes.push(createTile({
 
 // Start the game loop as soon as the sprite sheet is loaded
 window.addEventListener('load', gameLoop);
-document.addEventListener('keydown', keyDownHandler);
-document.addEventListener('keyup', keyUpHandler);
+
