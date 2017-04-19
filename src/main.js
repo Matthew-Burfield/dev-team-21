@@ -98,7 +98,6 @@ function gameLoop() {
     mario.y += correctionY;
     if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
       mario.velX = 0;
-      mario.jumping = false; // TODO tweak it a bit, can jump from the wall.
     } else if (direction === constant.SURFACE.BOTTOM) {
       mario.grounded = true;
       mario.jumping = false;
