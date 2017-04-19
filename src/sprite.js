@@ -44,7 +44,7 @@ movingSprite.moveRight = function () {
   if (this.velX < this.speed) {
     this.moving = true;
     this.velX += 1;
-    this.spriteStartY = 0;
+    this.spriteY = 0;
     this.update();
   }
 };
@@ -52,7 +52,7 @@ movingSprite.moveLeft = function () {
   if (this.velX > -this.speed) {
     this.moving = true;
     this.velX -= 1;
-    this.spriteStartY = 17;
+    this.spriteY = 17;
     this.update();
   }
 };
@@ -92,22 +92,33 @@ blockSprite.width = 16;
 blockSprite.height = 16;
 blockSprite.image = blockSprites;
 blockSprite.init = function (options) {
+  this.placementY = options.y;
   this.x = options.x;
   this.y = options.y || canvas.height - 16; // default to a floor block
   this.spriteX = options.spriteX || 80; // default to floor
   this.spriteY = options.spriteY || 194; // default to floor
   this.frameIndex = 0;
   this.tickCount = 0;
-  this.ticksPerFrame = options.ticksPerFrame || 31;
+  this.ticksPerFrame = options.ticksPerFrame || 2;
   this.numberOfFrames = options.numberOfFrames || 2;
   this.velY = 0;
-  this.gravity = 0.3;
+  this.gravity = 0.8;
   this.isHit = false;
 };
 blockSprite.update = function () {
   this.tickCount += 1;
   if (this.tickCount > this.ticksPerFrame) {
     this.tickCount = 0;
+
+    if (this.velY) {
+      this.velY += this.gravity;
+      this.y += this.velY;
+      if (this.y >= this.placementY) {
+        this.y = this.placementY;
+        this.velY = 0;
+        this.isHit = false;
+      }
+    }
 
     if (this.frameIndex < this.numberOfFrames - 1) {
       // Go to the next frame
@@ -121,14 +132,17 @@ blockSprite.update = function () {
 export const brick = Object.create(blockSprite);
 brick.initBrick = function initBrick(options) {
   this.init(options);
-  this.gotHit = false;
   this.gotBroken = false;
   this.delete = false;
+  this.ticksPerFrame = 2;
 };
 brick.hit = function hit() {
   // move brick up a little bit
-  this.isHit = true;
-  this.velY = -2;
+  if (!this.isHit) {
+    this.isHit = true;
+    this.isHit = true;
+    this.velY = -2;
+  }
 };
 brick.breakBlock = function breakBlock() {
   this.ticksPerFrame = 1;
@@ -142,11 +156,20 @@ export const questionBlock = Object.create(blockSprite);
 questionBlock.initQuestionBlock = function(options) {
   this.init(options);
   this.isAnimated = true;
+  this.ticksPerFrame = 31;
 };
 questionBlock.hit = function() {
-  this.spriteX = 128;
-  this.frameIndex = 0;
-  this.numberOfFrames = 0;
+  if (this.isAnimated) {
+    this.isAnimated = false;
+    this.ticksPerFrame = 2;
+    this.spriteX = 128;
+    this.numberOfFrames = 0;
+  }
+  if (!this.isHit) {
+    this.isHit = true;
+    this.isHit = true;
+    this.velY = -2;
+  }
 };
     // switch (this.type) {
     //   case 'brick':
