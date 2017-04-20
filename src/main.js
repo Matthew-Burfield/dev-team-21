@@ -15,6 +15,7 @@ import blockingObjects from './blockingObjects';
 let offsetX = 0;
 const deadZone = constant.canvas.height / 2;
 
+
 function clearCanvas() {
   constant.ctx.beginPath();
   constant.ctx.rect(-offsetX, 0, constant.canvas.width, constant.canvas.height);
@@ -23,6 +24,10 @@ function clearCanvas() {
   constant.ctx.closePath();
 }
 
+/**
+ * Draw non-blocking objects first so blocking objects get painted
+ * on top if required
+ */
 function renderNonBlockingObjects() {
   const nonBlockingObjectsArray = nonBlockingObjects.filter(item =>
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
@@ -64,6 +69,7 @@ function gameLoop() {
   mario.velX *= constant.friction;
   mario.velY += constant.gravity;
   mario.grounded = false;
+
 
   const blockingObjectsArray = blockingObjects.filter(item =>
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
@@ -122,7 +128,6 @@ function gameLoop() {
   constant.ctx.restore();
   requestAnimationFrame(gameLoop);
 } // End Gameloop
-
 
 // Start the game loop as soon as the sprite sheet is loaded
 window.addEventListener('load', gameLoop);

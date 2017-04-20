@@ -1,24 +1,5 @@
 const keys = [];
 
-/**
- * 
- * 
- * @param {any} mario
- if (e.keyCode === 37) { // left
-    console.log(offsetX);
-    if (playerX > 0) {
-      playerX--;
-    }
-  } else if (e.keyCode === 39) { // right
-    console.log(playerX, offsetX, deadZone);
-    if (playerX >= offsetX + deadZone) {
-      offsetX--;
-      } else {
-      playerX++;
-      }
-  }
-   */
-
 function actionKeyPress(mario) {
   if (keys[38] || keys[32] || keys[87]) {
     mario.jump();
