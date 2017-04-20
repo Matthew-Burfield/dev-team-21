@@ -5,7 +5,7 @@ import {
     tileSprite, brick, questionBlock, blockSprite,
 }
 from './sprite';
-import actionKeyPress, { offsetX } from './keyHandler';
+import actionKeyPress from './keyHandler';
 import {
     nonBlockingObjects,
 }
@@ -13,6 +13,8 @@ from './nonBlockingObjects';
 
 const boxes = [];
 // how far offset the canvas is
+let offsetX = 0;
+const deadZone = constant.canvas.height / 2;
 
 
 function getSpriteOptions(numBlocksFromLeft, numBlocksHigh, spriteX, spriteY) {
@@ -20,7 +22,7 @@ function getSpriteOptions(numBlocksFromLeft, numBlocksHigh, spriteX, spriteY) {
     x: numBlocksFromLeft * 16,
     y: constant.canvas.height - ((numBlocksHigh * 16) + 8),
     spriteX,
-    spriteY
+    spriteY,
   };
 }
 
@@ -56,22 +58,15 @@ function getFloorTile(i, yHeight) {
   return floor;
 }
 
-function gameLoop() {
-
-  // handle key and check if mario is moving
-  actionKeyPress(mario);
-  // Clear the screen
-  constant.ctx.save();
-  constant.ctx.translate(offsetX, 0);
+function clearCanvas() {
   constant.ctx.beginPath();
   constant.ctx.rect(-offsetX, 0, constant.canvas.width, constant.canvas.height);
   constant.ctx.fillStyle = '#2196F3';
   constant.ctx.fill();
   constant.ctx.closePath();
-  /**
-   * Draw non-blocking objects first so blocking objects get painted
-   * on top if required
-   */
+}
+
+function renderNonBlockingObjects() {
   const nonBlockingObjectsArray = nonBlockingObjects.filter(item =>
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
 
@@ -88,6 +83,22 @@ function gameLoop() {
       tile.height
     );
   });
+}
+
+function gameLoop() {
+  // handle key and check if mario is moving
+  actionKeyPress(mario);
+  // Clear the screen
+  constant.ctx.save();
+  constant.ctx.translate(offsetX, 0);
+
+  clearCanvas();
+  /**
+   * Draw non-blocking objects first so blocking objects get painted
+   * on top if required
+   */
+  renderNonBlockingObjects();
+
   mario.velX *= constant.friction;
   mario.velY += constant.gravity;
   mario.grounded = false;
@@ -124,12 +135,23 @@ function gameLoop() {
   if (mario.grounded) {
     mario.velY = 0;
   }
-  mario.x += mario.velX;
+  if (mario.x >= deadZone && mario.velX > 0) {
+    offsetX -= mario.velX;
+  } else {
+    mario.x += mario.velX;
+  }
+  if (mario.x < 0) {
+    mario.x = 0;
+  }
   mario.y += mario.velY;
   mario.render(offsetX);
   constant.ctx.restore();
   requestAnimationFrame(gameLoop);
 } // End Gameloop
+
+// function movePlayer(mario, offsetX) {
+
+// }
 
 for (let i = 0; i * blockSprite.width < constant.worldLength; i += 1) {
   boxes.push(getFloorTile(i, 8));

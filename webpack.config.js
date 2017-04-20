@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-  devtool: 'cheap-module-source-map',
+  devtool: 'cheap-eval-source-map',
   entry: {
     app: ['./src/main']
   },
@@ -11,4 +11,18 @@ module.exports = {
     publicPath: '/assets/',
     filename: 'bundle.js'
   },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env', 'es2015']
+          }
+        }
+      }
+    ]
+  }
 };
