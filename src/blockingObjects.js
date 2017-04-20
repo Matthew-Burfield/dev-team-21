@@ -43,6 +43,65 @@ function createTile(options) {
   return tile;
 }
 
+function createPyramidLayer(startX, length, numBlocksHeight) {
+  const spriteX = 0;
+  const spriteY = 16;
+  const width = 16;
+  const height = 16;
+  const arr = [];
+  for (let i = 0; i < length; i += 1) {
+    if (i < numBlocksHeight) {
+      arr.push(createTile({
+        width,
+        height,
+        x: startX + (i * width),
+        y: heightToFloor - height - (i * height),
+        spriteX,
+        spriteY,
+        isBlocking: true,
+      }));
+    }
+  }
+  return arr;
+}
+
+function createReversePyramidLayer(startX, length, numBlocksUpFromFloor) {
+  const spriteX = 0;
+  const spriteY = 16;
+  const width = 16;
+  const height = 16;
+  const arr = [];
+  for (let i = 0; i < length; i += 1) {
+    arr.push(createTile({
+      width,
+      height,
+      x: startX + (i * width),
+      y: heightToFloor - width - (numBlocksUpFromFloor * width),
+      spriteX,
+      spriteY,
+      isBlocking: true,
+    }));
+  }
+  return arr;
+}
+
+function createBlockPyramid(startX, numBlocksWidth, numBlocksHeight) {
+  const width = 16;
+  const arr = [];
+  for (let i = 0; i <= numBlocksWidth; i += 1) {
+    arr.push(...createPyramidLayer(startX + (i * width), numBlocksWidth - i, numBlocksHeight));
+  }
+  return arr;
+}
+
+function createReverseBlockPyramid(startX, numBlocksWidth, numBlocksHeight) {
+  const arr = [];
+  for (let i = 0; i < numBlocksHeight; i += 1) {
+    arr.push(...createReversePyramidLayer(startX, numBlocksWidth - i, i));
+  }
+  return arr;
+}
+
 function createPipe(x, size) {
   const arr = [];
   const width = 32;
@@ -129,6 +188,12 @@ blockingObjects.push(createBrick(2096, 72));
 blockingObjects.push(...createBricksInARow(2688, 136, 2));
 blockingObjects.push(createQuestionBlock(2720, 136));
 blockingObjects.push(createBrick(2736, 136));
+
+blockingObjects.push(...createBlockPyramid(2144, 4, 4));
+blockingObjects.push(...createReverseBlockPyramid(2240, 4, 4));
+blockingObjects.push(...createBlockPyramid(2368, 5, 4));
+blockingObjects.push(...createReverseBlockPyramid(2480, 4, 4));
+blockingObjects.push(...createBlockPyramid(2896, 9, 8));
 
 
 
