@@ -5,6 +5,10 @@ import actionKeyPress from './keyHandler';
 import nonBlockingObjects from './nonBlockingObjects';
 import blockingObjects from './blockingObjects';
 
+const score = '000000';
+const coins = '00';
+const time = '000';
+
 
 /**
  * offsetX maintains the x-axis offset to control the camera panning across the level
@@ -46,6 +50,22 @@ function renderNonBlockingObjects() {
   });
 }
 
+function renderText() {
+  const fontHeight = 8;
+  const marginTop = 7;
+  const marginLeft = 20;
+  constant.ctx.font = `normal ${fontHeight}px emulogic`;
+  constant.ctx.fillStyle = 'white';
+  constant.ctx.textBaseline = 'top';
+  constant.ctx.fillText('MARIO', marginLeft - offsetX, marginTop);
+  constant.ctx.fillText(score, marginLeft - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText(`x${coins}`, (marginLeft + 70) - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText('WORLD', (marginLeft + 110) - offsetX, marginTop);
+  constant.ctx.fillText('1-1', (marginLeft + 115) - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText('TIME', (marginLeft + 170) - offsetX, marginTop);
+  constant.ctx.fillText(time, (marginLeft + 175) - offsetX, marginTop + fontHeight);
+}
+
 function gameLoop() {
   // handle key and check if mario is moving
   actionKeyPress(mario);
@@ -64,6 +84,7 @@ function gameLoop() {
    * on top if required
    */
   renderNonBlockingObjects();
+  renderText();
 
   mario.velX *= constant.friction;
   mario.velY += constant.gravity;

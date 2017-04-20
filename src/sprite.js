@@ -37,8 +37,8 @@ movingSprite.init = function (options) {
   this.spriteY = options.spriteStartY;
   this.spriteSeparator = options.spriteSeparator;
   // Canvas position
-  this.x = 0;
-  this.y = 0;
+  this.x = options.x;
+  this.y = options.y;
 };
 movingSprite.moveRight = function () {
   if (this.velX < this.speed) {

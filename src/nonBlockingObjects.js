@@ -152,14 +152,14 @@ function getRepetitiveSprites() {
   for (let i = 0; i < worldLength; i += 768) {
     array.push(...[
       ...bigMountain(i),
+      ...cloud(i + 128, 128, 1),
       ...bush(i + 176, 3),
       ...smallMountain(i + 256),
-      ...cloud(i + 304, 160, 1),
+      ...cloud(i + 304, 144, 1),
       ...bush(i + 368, 1),
       ...cloud(i + 432, 128, 3),
-      ...cloud(i + 576, 160, 2),
+      ...cloud(i + 576, 144, 2),
       ...bush(i + 656, 2),
-      ...cloud(i + 896, 128, 1),
     ]);
   }
   return array;

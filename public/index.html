@@ -4,14 +4,18 @@
         <meta charset="utf-8" />
         <title>Gamedev Canvas Workshop</title>
         <style>
+            @font-face {
+                font-family: 'emulogic';
+                src: url('/fonts/emulogic.ttf')
+            }
             * { padding: 0; margin: 0 }
             canvas { background: #eee; display: block; margin: 0 auto; }
         </style>
     </head>
     <body>
 
-        <!-- The height of the actual mario level is 224 pixels // 300px / 3072px-->
-        <canvas id="myCanvas" height="224px" width="300px"></canvas>
+        <!-- The height of the actual mario level is 224 pixels // 256px / 3072px-->
+        <canvas id="myCanvas" height="224px" width="256px"></canvas>
 
         <script src="assets/bundle.js"></script>
     </body>

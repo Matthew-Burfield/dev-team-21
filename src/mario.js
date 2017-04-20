@@ -1,5 +1,5 @@
 import { movingSprite } from './sprite';
-import { ctx, characterSprites } from './constants';
+import { ctx, characterSprites, heightToFloor } from './constants';
 
 const mario = Object.create(movingSprite);
 
@@ -14,6 +14,8 @@ mario.init({
   spriteStartY: 0,
   spriteSeparator: 1,
   jumpHeight: 45,
+  x: 40,
+  y: heightToFloor,
 });
 
 mario.render = function (offsetX) {
