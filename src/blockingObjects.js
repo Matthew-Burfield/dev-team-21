@@ -1,30 +1,39 @@
-import { canvas, worldLength } from './constants';
+import { canvas, worldLength, heightToFloor } from './constants';
 import { tileSprite, brick, questionBlock, blockSprite } from './sprite';
 
 const blockingObjects = [];
 
-function getSpriteOptions(numBlocksFromLeft, numBlocksHigh, spriteX, spriteY) {
-  return {
-    x: numBlocksFromLeft * 16,
-    y: canvas.height - ((numBlocksHigh * 16) + 8),
+
+function createQuestionBlock(x, y) {
+  const questionBlockSprite = Object.create(questionBlock);
+  const spriteX = 80;
+  const spriteY = 112;
+  questionBlockSprite.initQuestionBlock({
+    x,
+    y: heightToFloor - (heightToFloor - y),
     spriteX,
     spriteY,
-  };
-}
-
-
-function createQuestionBlock(numBlocksFromLeft, numBlocksHigh) {
-  const questionBlockSprite = Object.create(questionBlock);
-  questionBlockSprite.initQuestionBlock(
-    getSpriteOptions(numBlocksFromLeft, numBlocksHigh, 80, 112)
-  );
+  });
   return questionBlockSprite;
 }
 
-function createBrick(numBlocksFromLeft, numBlocksHigh) {
+function createBrick(x, y) {
   const brickSprite = Object.create(brick);
-  brickSprite.initBrick(getSpriteOptions(numBlocksFromLeft, numBlocksHigh, 272, 112));
+  brickSprite.initBrick({
+    x,
+    y: heightToFloor - (heightToFloor - y),
+    spriteX: 272,
+    spriteY: 112,
+  });
   return brickSprite;
+}
+
+function createBricksInARow(startX, y, numberInARow) {
+  const arr = [];
+  for (let i = 0; i < numberInARow; i += 1) {
+    arr.push(createBrick(startX + (i * 16), y));
+  }
+  return arr;
 }
 
 
@@ -32,6 +41,33 @@ function createTile(options) {
   const tile = Object.create(tileSprite);
   tile.init(options);
   return tile;
+}
+
+function createPipe(x, size) {
+  const arr = [];
+  const width = 32;
+  const height = 16;
+  for (var i = 0; i < size; i += 1) {
+    arr.push(createTile({
+      width,
+      height,
+      x,
+      y: (heightToFloor - 16) - (i * 16),
+      spriteX: 0,
+      spriteY: 144,
+      isBlocking: true,
+    }));
+  }
+  arr.push(createTile({
+    width,
+    height,
+    x,
+    y: (heightToFloor - 16) - (i * 16),
+    spriteX: 0,
+    spriteY: 128,
+    isBlocking: true,
+  }));
+  return arr;
 }
 
 function getFloorTile(i, yHeight) {
@@ -45,43 +81,55 @@ function getFloorTile(i, yHeight) {
 }
 
 for (let i = 0; i * blockSprite.width < worldLength; i += 1) {
-  blockingObjects.push(getFloorTile(i, 8));
-  blockingObjects.push(getFloorTile(i, 24));
+  // Need to add a few conditions for holes in the floor.
+  // We don't want to render a floor tile at these coodinates
+  const listOfNoFloors = [1104, 1120, 1376, 1392, 1408, 2448, 2464];
+  // from 1104 - 1136 (2 tiles)
+  // from 1376 - 1424 (3 tiles)
+  // from 2448 - 2480 (2 tiles)
+  if (!listOfNoFloors.includes(i * 16)) {
+    blockingObjects.push(getFloorTile(i, 8));
+    blockingObjects.push(getFloorTile(i, 24));
+  }
 }
 
-blockingObjects.push(createQuestionBlock(16, 5));
-blockingObjects.push(createBrick(20, 5));
-blockingObjects.push(createQuestionBlock(21, 5));
-blockingObjects.push(createBrick(22, 5));
-blockingObjects.push(createQuestionBlock(23, 5));
-blockingObjects.push(createBrick(24, 5));
-blockingObjects.push(createQuestionBlock(22, 9));
-blockingObjects.push(createTile({
-  width: 32,
-  height: 32,
-  x: 28 * 16,
-  y: canvas.height - ((3 * 16) + 8),
-  spriteX: 0,
-  spriteY: 128,
-  isBlocking: true,
-}));
-blockingObjects.push(createTile({
-  width: 32,
-  height: 16,
-  x: 38 * 16,
-  y: canvas.height - ((2 * 16) + 8),
-  spriteX: 0,
-  spriteY: 144,
-  isBlocking: true,
-}));
-blockingObjects.push(createTile({
-  width: 32,
-  height: 32,
-  x: 38 * 16,
-  y: canvas.height - ((4 * 16) + 8),
-  spriteX: 0,
-  spriteY: 128,
-  isBlocking: true,
-}));
+blockingObjects.push(createQuestionBlock(256, 136));
+blockingObjects.push(createBrick(320, 136));
+blockingObjects.push(createQuestionBlock(336, 136));
+blockingObjects.push(createBrick(352, 136));
+blockingObjects.push(createQuestionBlock(368, 136));
+blockingObjects.push(createBrick(384, 136));
+blockingObjects.push(createQuestionBlock(352, 72));
+blockingObjects.push(...createPipe(448, 1));
+blockingObjects.push(...createPipe(608, 2));
+blockingObjects.push(...createPipe(912, 2));
+blockingObjects.push(...createPipe(2608, 1));
+blockingObjects.push(...createPipe(2864, 1));
+blockingObjects.push(createBrick(1232, 136));
+blockingObjects.push(createQuestionBlock(1248, 136));
+blockingObjects.push(createBrick(1264, 136));
+
+blockingObjects.push(...createBricksInARow(1280, 72, 8));
+blockingObjects.push(...createBricksInARow(1456, 72, 3));
+
+blockingObjects.push(createBrick(1503, 136));
+blockingObjects.push(createQuestionBlock(1504, 72));
+blockingObjects.push(...createBricksInARow(1600, 136, 2));
+blockingObjects.push(createQuestionBlock(1696, 136));
+blockingObjects.push(createQuestionBlock(1744, 136));
+blockingObjects.push(createQuestionBlock(1792, 136));
+blockingObjects.push(createQuestionBlock(1744, 72));
+blockingObjects.push(createBrick(1888, 136));
+blockingObjects.push(...createBricksInARow(1936, 72, 3));
+blockingObjects.push(...createBricksInARow(2064, 136, 2));
+blockingObjects.push(createQuestionBlock(2064, 72));
+blockingObjects.push(createQuestionBlock(2080, 72));
+blockingObjects.push(createBrick(2048, 72));
+blockingObjects.push(createBrick(2096, 72));
+blockingObjects.push(...createBricksInARow(2688, 136, 2));
+blockingObjects.push(createQuestionBlock(2720, 136));
+blockingObjects.push(createBrick(2736, 136));
+
+
 
 export default blockingObjects;
