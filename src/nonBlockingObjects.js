@@ -46,19 +46,36 @@ const TILE_SPRITE = {
   CLOUD_BOTTOM_RIGHT: { x: 32, y: 336 }
 };
 
-export const nonBlockingObjects = [
-  ...bigMountain(0, 0),
-  ...bush(176, 0, 3),
-  ...smallMountain(256, 0),
-  ...bush(368, 0, 1),
-  ...cloud(304, 160, 1),
-  ...cloud(432, 128, 3),
-  ...cloud(576, 160, 2)
-];
+function createTile(width, height, options) {
+  const isBlocking = false;
+  const tile = Object.create(tileSprite);
+  tile.init({
+    width,
+    height,
+    x: options.x,
+    y: options.y,
+    spriteX: options.spriteX,
+    spriteY: options.spriteY,
+    isBlocking,
+  });
+  return tile;
+}
+
+
+function createTileWrapper(startX, startY, xDistanceFromFirstTile, yDistanceFromBottomTile, spriteCoords) {
+  const width = 16;
+  const height = 16;
+  return createTile(width, height, {
+    x: startX + (width * xDistanceFromFirstTile),
+    y: heightToFloor - startY - height - (height * yDistanceFromBottomTile),
+    spriteX: spriteCoords.x,
+    spriteY: spriteCoords.y,
+  });
+}
 
 /**
  * Creates a big non blocking mountain to paint to the background
- * 
+ *
  * @param {number} startX The bottom left corner coordinate of the mountain
  * @param {number} startY The bottom left corner coordinate of the mountain
  */
@@ -98,6 +115,8 @@ function cloud(startX, startY, cloudLength) {
   const arr = [];
   arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.CLOUD_BOTTOM_LEFT));
   arr.push(createTileWrapper(startX, startY, 0, 1, TILE_SPRITE.CLOUD_TOP_LEFT));
+
+  // Need to use var here so i remains in scope after the for loop
   for (var i = 1; i < cloudLength + 1; i += 1) {
     arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_MIDDLE));
     arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_MIDDLE));
@@ -111,6 +130,8 @@ function cloud(startX, startY, cloudLength) {
 function bush(startX, startY, bushLength) {
   const arr = [];
   arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.BUSH_LEFT_END));
+
+  // Need to use var here so i remains in scope after the for loop
   for (var i = 1; i < bushLength + 1; i += 1) {
     arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.BUSH_MIDDLE));
   }
@@ -119,28 +140,14 @@ function bush(startX, startY, bushLength) {
   return arr;
 }
 
-function createTileWrapper(startX, startY, xDistanceFromFirstTile, yDistanceFromBottomTile, spriteCoords) {
-  const width = 16;
-  const height = 16;
-  return createTile(width, height, {
-    x: startX + (width * xDistanceFromFirstTile),
-    y: heightToFloor - startY - height - (height * yDistanceFromBottomTile),
-    spriteX: spriteCoords.x,
-    spriteY: spriteCoords.y,
-  });
-}
+const nonBlockingObjects = [
+  ...bigMountain(0, 0),
+  ...bush(176, 0, 3),
+  ...smallMountain(256, 0),
+  ...bush(368, 0, 1),
+  ...cloud(304, 160, 1),
+  ...cloud(432, 128, 3),
+  ...cloud(576, 160, 2)
+];
 
-function createTile(width, height, options) {
-  const isBlocking = false;
-  const tile = Object.create(tileSprite);
-  tile.init({
-    width,
-    height,
-    x: options.x,
-    y: options.y,
-    spriteX: options.spriteX,
-    spriteY: options.spriteY,
-    isBlocking,
-  });
-  return tile;
-}
+export default nonBlockingObjects;

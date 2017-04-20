@@ -1,77 +1,34 @@
 import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
-import {
-    tileSprite, brick, questionBlock, blockSprite,
-}
-from './sprite';
-import actionKeyPress, { offsetX } from './keyHandler';
-import {
-    nonBlockingObjects,
-}
-from './nonBlockingObjects';
-
-const boxes = [];
-// how far offset the canvas is
+import { tileSprite, brick, questionBlock, blockSprite } from './sprite';
+import actionKeyPress from './keyHandler';
+import nonBlockingObjects from './nonBlockingObjects';
+import blockingObjects from './blockingObjects';
 
 
-function getSpriteOptions(numBlocksFromLeft, numBlocksHigh, spriteX, spriteY) {
-  return {
-    x: numBlocksFromLeft * 16,
-    y: constant.canvas.height - ((numBlocksHigh * 16) + 8),
-    spriteX,
-    spriteY
-  };
-}
+/**
+ * offsetX maintains the x-axis offset to control the camera panning across the level
+ * deadZone is the area in which mario can freely run around the screen without
+ *          the camera panning. In this case, in the left half of the screen.
+ */
+let offsetX = 0;
+const deadZone = constant.canvas.height / 2;
 
 
-function createQuestionBlock(numBlocksFromLeft, numBlocksHigh) {
-  const questionBlockSprite = Object.create(questionBlock);
-  questionBlockSprite.initQuestionBlock(
-    getSpriteOptions(numBlocksFromLeft, numBlocksHigh, 80, 112)
-  );
-  return questionBlockSprite;
-}
-
-function createBrick(numBlocksFromLeft, numBlocksHigh) {
-  const brickSprite = Object.create(brick);
-  brickSprite.initBrick(getSpriteOptions(numBlocksFromLeft, numBlocksHigh, 272, 112));
-  return brickSprite;
-}
-
-
-function createTile(options) {
-  const tile = Object.create(tileSprite);
-  tile.init(options);
-  return tile;
-}
-
-function getFloorTile(i, yHeight) {
-  const floor = Object.create(blockSprite);
-  floor.init({
-    x: i * blockSprite.width,
-    y: constant.canvas.height - yHeight,
-    numberOfFrames: 1,
-  });
-  return floor;
-}
-
-function gameLoop() {
-
-  // handle key and check if mario is moving
-  actionKeyPress(mario);
-  // Clear the screen
-  constant.ctx.save();
-  constant.ctx.translate(offsetX, 0);
+function clearCanvas() {
   constant.ctx.beginPath();
   constant.ctx.rect(-offsetX, 0, constant.canvas.width, constant.canvas.height);
   constant.ctx.fillStyle = '#2196F3';
   constant.ctx.fill();
   constant.ctx.closePath();
-  /**
-   * Draw non-blocking objects first so blocking objects get painted
-   * on top if required
-   */
+}
+
+/**
+ * Draw non-blocking objects first so blocking objects get painted
+ * on top if required
+ */
+function renderNonBlockingObjects() {
   const nonBlockingObjectsArray = nonBlockingObjects.filter(item =>
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
 
@@ -88,16 +45,38 @@ function gameLoop() {
       tile.height
     );
   });
+}
+
+function gameLoop() {
+  // handle key and check if mario is moving
+  actionKeyPress(mario);
+  constant.ctx.save();
+
+  /**
+   * This is what moves the "camera". We're offsetting the canvas context
+   * so the start x position is not 0, it's whatever the offset it.
+   * This give the illusion that we're panning across the screen.
+   */
+  constant.ctx.translate(offsetX, 0);
+
+  clearCanvas();
+  /**
+   * Draw non-blocking objects first so blocking objects get painted
+   * on top if required
+   */
+  renderNonBlockingObjects();
+
   mario.velX *= constant.friction;
   mario.velY += constant.gravity;
   mario.grounded = false;
 
-  const blockingObjectsArray = boxes.filter(item =>
+
+  const blockingObjectsArray = blockingObjects.filter(item =>
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
 
   blockingObjectsArray.forEach((box) => {
     if (box.delete) {
-      boxes.splice(boxes.indexOf(box), 1); // remove it
+      blockingObjects.splice(blockingObjects.indexOf(box), 1); // remove it
     }
     if (box.update) {
       box.update();
@@ -123,52 +102,31 @@ function gameLoop() {
   if (mario.grounded) {
     mario.velY = 0;
   }
-  mario.x += mario.velX;
+
+  /**
+   * With the panning camera, instead of just updating mario's x position,
+   * we only want to update the x position if mario's x position is less that
+   * the deadZone. I.e. if mario is in the left side of the screen.
+   *
+   * If he is on the right side, then we don't update his x position, we instead
+   * just decrease the offset which will move the camera to the right.
+   *
+   * We purposely don't move the camera to the left, as the camera never moved left
+   * in the real game.
+   */
+  if (mario.x >= deadZone && mario.velX > 0) {
+    offsetX -= mario.velX;
+  } else {
+    mario.x += mario.velX;
+  }
+  if (mario.x < 0) {
+    mario.x = 0;
+  }
   mario.y += mario.velY;
   mario.render(offsetX);
   constant.ctx.restore();
   requestAnimationFrame(gameLoop);
 } // End Gameloop
-
-for (let i = 0; i * blockSprite.width < constant.worldLength; i += 1) {
-  boxes.push(getFloorTile(i, 8));
-  boxes.push(getFloorTile(i, 24));
-}
-
-boxes.push(createQuestionBlock(16, 5));
-boxes.push(createBrick(20, 5));
-boxes.push(createQuestionBlock(21, 5));
-boxes.push(createBrick(22, 5));
-boxes.push(createQuestionBlock(23, 5));
-boxes.push(createBrick(24, 5));
-boxes.push(createQuestionBlock(22, 9));
-boxes.push(createTile({
-  width: 32,
-  height: 32,
-  x: 28 * 16,
-  y: constant.canvas.height - ((3 * 16) + 8),
-  spriteX: 0,
-  spriteY: 128,
-  isBlocking: true,
-}));
-boxes.push(createTile({
-  width: 32,
-  height: 16,
-  x: 38 * 16,
-  y: constant.canvas.height - ((2 * 16) + 8),
-  spriteX: 0,
-  spriteY: 144,
-  isBlocking: true,
-}));
-boxes.push(createTile({
-  width: 32,
-  height: 32,
-  x: 38 * 16,
-  y: constant.canvas.height - ((4 * 16) + 8),
-  spriteX: 0,
-  spriteY: 128,
-  isBlocking: true,
-}));
 
 // Start the game loop as soon as the sprite sheet is loaded
 window.addEventListener('load', gameLoop);

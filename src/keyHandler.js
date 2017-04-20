@@ -1,26 +1,22 @@
-import { canvas } from './constants';
-
 const keys = [];
-export var offsetX = 0;
-var deadZone = canvas.height / 2;
 
 function actionKeyPress(mario) {
   if (keys[38] || keys[32] || keys[87]) {
     mario.jump();
   }
   if (keys[39] || keys[68]) {
-    if (mario.x >= deadZone) {
-      offsetX -= mario.speed;
-    } else {
-      mario.moveRight();
-    }
+    // if (mario.x >= offsetX + deadZone) {
+      // Increase offset and update mario's sprite frame but keep mario stationary
+    // } else {
+      // Actually increase mario's x position
+    mario.moveRight();
+    // }
   } else if (keys[37] || keys[65]) {
-    console.log(mario.x, deadZone);
-    if (mario.x - mario.width <= offsetX) {
-      mario.x = offsetX;
-    } else if (mario.x < deadZone) {
-      mario.moveLeft();
-    }
+    // if (mario.x > 0) {
+      // Only move mario left if we isn't going to go off the screen.
+      // Also dont pan the camera to the left. Mario can't run backwards.
+    mario.moveLeft();
+    // }
   } else {
     mario.stop();
   }
