@@ -140,7 +140,6 @@ brick.hit = function hit() {
   // move brick up a little bit
   if (!this.isHit) {
     this.isHit = true;
-    this.isHit = true;
     this.velY = -2;
   }
 };
