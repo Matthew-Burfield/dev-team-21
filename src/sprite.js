@@ -1,4 +1,4 @@
-import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN } from './constants';
+import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP } from './constants';
 
 const sprite = {
   render() {
@@ -183,6 +183,8 @@ brick.initBrick = function initBrick(options) {
 brick.hit = function hit() {
   // move brick up a little bit
   if (!this.isHit) {
+    AUDIO_BUMP.load();
+    AUDIO_BUMP.play();
     this.isHit = true;
     this.velY = -2;
   }
