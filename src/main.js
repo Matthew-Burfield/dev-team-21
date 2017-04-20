@@ -1,7 +1,6 @@
 import mario from './mario';
 import * as constant from './constants';
 import collisionCheck from './collisionDetection';
-import { tileSprite, brick, questionBlock, blockSprite } from './sprite';
 import actionKeyPress from './keyHandler';
 import nonBlockingObjects from './nonBlockingObjects';
 import blockingObjects from './blockingObjects';
