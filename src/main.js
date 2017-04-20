@@ -4,10 +4,7 @@ import collisionCheck from './collisionDetection';
 import actionKeyPress from './keyHandler';
 import nonBlockingObjects from './nonBlockingObjects';
 import blockingObjects from './blockingObjects';
-
-const score = '000000';
-const coins = '00';
-const time = '000';
+import levelState from './levelState';
 
 
 /**
@@ -58,12 +55,12 @@ function renderText() {
   constant.ctx.fillStyle = 'white';
   constant.ctx.textBaseline = 'top';
   constant.ctx.fillText('MARIO', marginLeft - offsetX, marginTop);
-  constant.ctx.fillText(score, marginLeft - offsetX, marginTop + fontHeight);
-  constant.ctx.fillText(`x${coins}`, (marginLeft + 70) - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText(levelState.getScore(), marginLeft - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText(`x${levelState.getCoins()}`, (marginLeft + 70) - offsetX, marginTop + fontHeight);
   constant.ctx.fillText('WORLD', (marginLeft + 110) - offsetX, marginTop);
-  constant.ctx.fillText('1-1', (marginLeft + 115) - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText(`${levelState.world}-${levelState.stage}`, (marginLeft + 115) - offsetX, marginTop + fontHeight);
   constant.ctx.fillText('TIME', (marginLeft + 170) - offsetX, marginTop);
-  constant.ctx.fillText(time, (marginLeft + 175) - offsetX, marginTop + fontHeight);
+  constant.ctx.fillText(levelState.getTime(), (marginLeft + 175) - offsetX, marginTop + fontHeight);
 }
 
 function gameLoop() {

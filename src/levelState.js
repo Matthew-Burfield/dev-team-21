@@ -9,7 +9,7 @@ const coinSize = coinFormat.length; // I.e. a score of 1 will have 5 leading zer
 
 const levelState = {
   score: 0,
-  numCoins: 0,
+  coins: 0,
   world: 1,
   stage: 1,
   time: 400,
@@ -33,7 +33,13 @@ const levelState = {
   getCoins() {
     const coins = coinFormat + this.coins;
     return coins.substr(coins.length - coinSize);
-  }
+  },
 };
+
+/**
+ * Just set an interval for now for the time countdown, since the game
+ * loads straight away anyway
+ */
+setInterval(() => levelState.reduceTime(), 1000);
 
 export default levelState;
