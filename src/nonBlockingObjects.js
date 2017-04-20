@@ -1,5 +1,5 @@
 import { tileSprite } from './sprite';
-import { heightToFloor } from './constants';
+import { heightToFloor, worldLength } from './constants';
 
 const TILE_SPRITE = {
   MOUNTAIN_UPWARD_SLOPE: {
@@ -77,18 +77,18 @@ function createTileWrapper(startX, startY, xDistanceFromFirstTile, yDistanceFrom
  * Creates a big non blocking mountain to paint to the background
  *
  * @param {number} startX The bottom left corner coordinate of the mountain
- * @param {number} startY The bottom left corner coordinate of the mountain
  */
-function bigMountain(startX, startY) {
-  const bottomUpwardSlope = createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE);
-  const bottomRightDot = createTileWrapper(startX, startY, 1, 0, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS);
-  const bottomCenter = createTileWrapper(startX, startY, 2, 0, TILE_SPRITE.MOUNTAIN_CENTER);
-  const bottomLeftDots = createTileWrapper(startX, startY, 3, 0, TILE_SPRITE.MOUNTAIN_LEFT_DOTS);
-  const bottomDownwardSlope = createTileWrapper(startX, startY, 4, 0, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE);
-  const upperUpwardSlope = createTileWrapper(startX, startY, 1, 1, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE);
-  const upperRightDot = createTileWrapper(startX, startY, 2, 1, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS);
-  const upperDownwardSlope = createTileWrapper(startX, startY, 3, 1, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE);
-  const top = createTileWrapper(startX, startY, 2, 2, TILE_SPRITE.MOUNTAIN_TOP);
+function bigMountain(startX) {
+  const yCoord = 0;
+  const bottomUpwardSlope = createTileWrapper(startX, yCoord, 0, 0, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE);
+  const bottomRightDot = createTileWrapper(startX, yCoord, 1, 0, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS);
+  const bottomCenter = createTileWrapper(startX, yCoord, 2, 0, TILE_SPRITE.MOUNTAIN_CENTER);
+  const bottomLeftDots = createTileWrapper(startX, yCoord, 3, 0, TILE_SPRITE.MOUNTAIN_LEFT_DOTS);
+  const bottomDownwardSlope = createTileWrapper(startX, yCoord, 4, 0, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE);
+  const upperUpwardSlope = createTileWrapper(startX, yCoord, 1, 1, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE);
+  const upperRightDot = createTileWrapper(startX, yCoord, 2, 1, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS);
+  const upperDownwardSlope = createTileWrapper(startX, yCoord, 3, 1, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE);
+  const top = createTileWrapper(startX, yCoord, 2, 2, TILE_SPRITE.MOUNTAIN_TOP);
 
   return [
     bottomUpwardSlope,
@@ -103,51 +103,70 @@ function bigMountain(startX, startY) {
   ];
 }
 
-function smallMountain(startX, startY) {
-  return [createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE),
-    createTileWrapper(startX, startY, 1, 0, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS),
-    createTileWrapper(startX, startY, 2, 0, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE),
-    createTileWrapper(startX, startY, 1, 1, TILE_SPRITE.MOUNTAIN_TOP),
+function smallMountain(startX) {
+  const yCoord = 0;
+  return [createTileWrapper(startX, yCoord, 0, 0, TILE_SPRITE.MOUNTAIN_UPWARD_SLOPE),
+    createTileWrapper(startX, yCoord, 1, 0, TILE_SPRITE.MOUNTAIN_RIGHT_DOTS),
+    createTileWrapper(startX, yCoord, 2, 0, TILE_SPRITE.MOUNTAIN_DOWNWARD_SLOPE),
+    createTileWrapper(startX, yCoord, 1, 1, TILE_SPRITE.MOUNTAIN_TOP),
   ];
 }
 
 function cloud(startX, startY, cloudLength) {
   const arr = [];
-  arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.CLOUD_BOTTOM_LEFT));
-  arr.push(createTileWrapper(startX, startY, 0, 1, TILE_SPRITE.CLOUD_TOP_LEFT));
+  const endOfMapCorrection = 200; // pixels
+  if (startX > 0 && startX < worldLength - endOfMapCorrection) {
+    arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.CLOUD_BOTTOM_LEFT));
+    arr.push(createTileWrapper(startX, startY, 0, 1, TILE_SPRITE.CLOUD_TOP_LEFT));
 
-  // Need to use var here so i remains in scope after the for loop
-  for (var i = 1; i < cloudLength + 1; i += 1) {
-    arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_MIDDLE));
-    arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_MIDDLE));
+    // Need to use var here so i remains in scope after the for loop
+    for (var i = 1; i < cloudLength + 1; i += 1) {
+      arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_MIDDLE));
+      arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_MIDDLE));
+    }
+    arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_RIGHT));
+    arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_RIGHT));
   }
-  arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.CLOUD_BOTTOM_RIGHT));
-  arr.push(createTileWrapper(startX, startY, i, 1, TILE_SPRITE.CLOUD_TOP_RIGHT));
+  return arr;
+}
+
+function bush(startX, bushLength) {
+  const arr = [];
+  const yCoord = 0;
+
+  if (startX >= 0 && startX < worldLength) {
+    arr.push(createTileWrapper(startX, yCoord, 0, 0, TILE_SPRITE.BUSH_LEFT_END));
+
+    // Need to use var here so i remains in scope after the for loop
+    for (var i = 1; i < bushLength + 1; i += 1) {
+      arr.push(createTileWrapper(startX, yCoord, i, 0, TILE_SPRITE.BUSH_MIDDLE));
+    }
+    arr.push(createTileWrapper(startX, yCoord, i, 0, TILE_SPRITE.BUSH_RIGHT_END));
+  }
 
   return arr;
 }
 
-function bush(startX, startY, bushLength) {
-  const arr = [];
-  arr.push(createTileWrapper(startX, startY, 0, 0, TILE_SPRITE.BUSH_LEFT_END));
-
-  // Need to use var here so i remains in scope after the for loop
-  for (var i = 1; i < bushLength + 1; i += 1) {
-    arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.BUSH_MIDDLE));
+function getRepetitiveSprites() {
+  const array = [];
+  for (let i = 0; i < worldLength; i += 768) {
+    array.push(...[
+      ...bigMountain(i),
+      ...bush(i + 176, 3),
+      ...smallMountain(i + 256),
+      ...cloud(i + 304, 160, 1),
+      ...bush(i + 368, 1),
+      ...cloud(i + 432, 128, 3),
+      ...cloud(i + 576, 160, 2),
+      ...bush(i + 656, 2),
+      ...cloud(i + 896, 128, 1),
+    ]);
   }
-  arr.push(createTileWrapper(startX, startY, i, 0, TILE_SPRITE.BUSH_RIGHT_END));
-
-  return arr;
+  return array;
 }
 
 const nonBlockingObjects = [
-  ...bigMountain(0, 0),
-  ...bush(176, 0, 3),
-  ...smallMountain(256, 0),
-  ...bush(368, 0, 1),
-  ...cloud(304, 160, 1),
-  ...cloud(432, 128, 3),
-  ...cloud(576, 160, 2)
+  ...getRepetitiveSprites(),
 ];
 
 export default nonBlockingObjects;
