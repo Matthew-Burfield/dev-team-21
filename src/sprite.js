@@ -1,4 +1,4 @@
-import { canvas, blockSprites, tileSprites, itemSprites, ctx } from './constants';
+import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN } from './constants';
 
 const sprite = {
   render() {
@@ -34,6 +34,8 @@ coin.init = function(spawningObjectX, spawningObjectY) {
   this.y = spawningObjectY - this.height;
   this.placementY = this.y;
   this.collision = false;
+  AUDIO_COIN.load();
+  AUDIO_COIN.play(); // Play the coin sound when a coin is initiated
 };
 coin.update = function() {
   this.tickCount += 1;
