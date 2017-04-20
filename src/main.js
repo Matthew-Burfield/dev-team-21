@@ -100,19 +100,21 @@ function gameLoop() {
     }
     box.render();
 
-    const { direction, correctionY, correctionX } = collisionCheck(mario, box, offsetX);
-    mario.x += correctionX;
-    mario.y += correctionY;
-    if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
-      mario.velX = 0;
-    } else if (direction === constant.SURFACE.BOTTOM) {
-      mario.grounded = true;
-      mario.jumping = false;
-    } else if (direction === constant.SURFACE.TOP) {
-      box.hit();
-      mario.velY *= -0.1;
-      if (box.type === 'brick') {
-        box.setAnimate(true);
+    if (box.collision) {
+      const { direction, correctionY, correctionX } = collisionCheck(mario, box, offsetX);
+      mario.x += correctionX;
+      mario.y += correctionY;
+      if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+        mario.velX = 0;
+      } else if (direction === constant.SURFACE.BOTTOM) {
+        mario.grounded = true;
+        mario.jumping = false;
+      } else if (direction === constant.SURFACE.TOP) {
+        const itemToSpawn = box.hit();
+        if (itemToSpawn) {
+          blockingObjects.push(itemToSpawn);
+        }
+        mario.velY *= -0.1;
       }
     }
   });

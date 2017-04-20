@@ -1,8 +1,7 @@
 import { canvas, worldLength, heightToFloor } from './constants';
-import { tileSprite, brick, questionBlock, blockSprite } from './sprite';
+import { tileSprite, brick, questionBlock, blockSprite, coin } from './sprite';
 
 const blockingObjects = [];
-
 
 function createQuestionBlock(x, y) {
   const questionBlockSprite = Object.create(questionBlock);
@@ -13,6 +12,7 @@ function createQuestionBlock(x, y) {
     y: heightToFloor - (heightToFloor - y),
     spriteX,
     spriteY,
+    items: [Object.create(coin)],
   });
   return questionBlockSprite;
 }

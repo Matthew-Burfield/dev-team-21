@@ -1,4 +1,4 @@
-import { canvas, blockSprites, tileSprites, ctx } from './constants';
+import { canvas, blockSprites, tileSprites, itemSprites, ctx } from './constants';
 
 const sprite = {
   render() {
@@ -15,6 +15,46 @@ const sprite = {
       this.height
     );
   },
+};
+
+export const coin = Object.create(sprite);
+coin.init = function(spawningObjectX, spawningObjectY) {
+  this.height = 16;
+  this.width = 16;
+  this.image = itemSprites;
+  this.spriteX = 0;
+  this.spriteY = 112;
+  this.velY = -8;
+  this.frameIndex = 0;
+  this.tickCount = 0;
+  this.ticksPerFrame = 1;
+  this.numberOfFrames = 4;
+  this.gravity = 0.8;
+  this.x = spawningObjectX;
+  this.y = spawningObjectY - this.height;
+  this.placementY = this.y;
+  this.collision = false;
+};
+coin.update = function() {
+  this.tickCount += 1;
+  if (this.tickCount > this.ticksPerFrame) {
+    this.tickCount = 0;
+
+    if (this.velY) {
+      this.velY += this.gravity;
+      this.y += this.velY;
+      if (this.y >= this.placementY) {
+        this.delete = true;
+      }
+    }
+
+    if (this.frameIndex < this.numberOfFrames - 1) {
+      // Go to the next frame
+      this.frameIndex += 1;
+    } else {
+      this.frameIndex = 0;
+    }
+  }
 };
 
 export const movingSprite = Object.create(sprite);
@@ -39,6 +79,7 @@ movingSprite.init = function (options) {
   // Canvas position
   this.x = options.x;
   this.y = options.y;
+  this.collision = true;
 };
 movingSprite.moveRight = function () {
   if (this.velX < this.speed) {
@@ -91,6 +132,7 @@ export const blockSprite = Object.create(sprite);
 blockSprite.width = 16;
 blockSprite.height = 16;
 blockSprite.image = blockSprites;
+blockSprite.collision = true;
 blockSprite.init = function (options) {
   this.placementY = options.y;
   this.x = options.x;
@@ -102,7 +144,7 @@ blockSprite.init = function (options) {
   this.ticksPerFrame = options.ticksPerFrame || 2;
   this.numberOfFrames = options.numberOfFrames || 2;
   this.velY = 0;
-  this.gravity = 0.8;
+  this.gravity = options.gravity || 0.8;
   this.isHit = false;
 };
 blockSprite.update = function () {
@@ -156,40 +198,28 @@ questionBlock.initQuestionBlock = function(options) {
   this.init(options);
   this.isAnimated = true;
   this.ticksPerFrame = 31;
+  this.items = options.items || [];
 };
 questionBlock.hit = function() {
-  if (this.isAnimated) {
+  let item = null;
+  if (!this.isHit) {
+    // If there are items - spawn them
+    if (this.items.length > 0) {
+      // How can I get this item into the blocking array for rendering?
+      item = this.items.pop();
+      item.init(this.x, this.y);
+    }
+    this.isHit = true;
+    this.velY = -2;
+  }
+  if (this.isAnimated && this.items.length === 0) {
     this.isAnimated = false;
     this.ticksPerFrame = 2;
     this.spriteX = 128;
     this.numberOfFrames = 0;
   }
-  if (!this.isHit) {
-    this.isHit = true;
-    this.isHit = true;
-    this.velY = -2;
-  }
+  return item;
 };
-    // switch (this.type) {
-    //   case 'brick':
-    //     this.breakable = true;
-    //     this.singleAnimation = true;
-    //     this.animate = false;
-    //     break;
-    //   case 'question':
-    //     this.breakable = false;
-    //     this.singleAnimation = false;
-    //     this.animate = true;
-    //     break;
-    // }
-
-    // change the x to static block after hit
-        // if (this.gotBroken) {
-        //   this.delete = true;
-        // } else {
-        //   this.animate = false;
-        //   this.spriteX += (this.frameIndex * this.width)
-        // }
 
 export const tileSprite = Object.create(sprite);
 tileSprite.image = tileSprites;
@@ -201,6 +231,6 @@ tileSprite.init = function (options) {
   this.y = options.y;
   this.spriteX = options.spriteX;
   this.spriteY = options.spriteY;
-  this.isBlocking = options.isBlocking || false;
+  this.collision = options.isBlocking || false;
   this.breakable = options.breakable || false;
 };
