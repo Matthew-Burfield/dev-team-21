@@ -12,13 +12,13 @@ const sprite = {
       this.x,
       this.y,
       this.width,
-      this.height
+      this.height,
     );
   },
 };
 
 export const coin = Object.create(sprite);
-coin.init = function(spawningObjectX, spawningObjectY) {
+coin.init = function (spawningObjectX, spawningObjectY) {
   this.height = 16;
   this.width = 16;
   this.image = itemSprites;
@@ -37,7 +37,7 @@ coin.init = function(spawningObjectX, spawningObjectY) {
   AUDIO_COIN.load();
   AUDIO_COIN.play(); // Play the coin sound when a coin is initiated
 };
-coin.update = function() {
+coin.update = function () {
   this.tickCount += 1;
   if (this.tickCount > this.ticksPerFrame) {
     this.tickCount = 0;
@@ -198,13 +198,13 @@ brick.breakBlock = function breakBlock() {
 };
 
 export const questionBlock = Object.create(blockSprite);
-questionBlock.initQuestionBlock = function(options) {
+questionBlock.initQuestionBlock = function (options) {
   this.init(options);
   this.isAnimated = true;
   this.ticksPerFrame = 31;
   this.items = options.items || [];
 };
-questionBlock.hit = function() {
+questionBlock.hit = function () {
   let item = null;
   if (!this.isHit) {
     // If there are items - spawn them

@@ -196,5 +196,4 @@ blockingObjects.push(...createReverseBlockPyramid(2480, 4, 4));
 blockingObjects.push(...createBlockPyramid(2896, 9, 8));
 
 
-
 export default blockingObjects;
