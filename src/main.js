@@ -6,6 +6,7 @@ import nonBlockingObjects from './nonBlockingObjects';
 import aiObjects from './aiObjects'
 import blockingObjects from './blockingObjects';
 import levelState from './levelState';
+import movingSprite from './sprite';
 
 
 
@@ -98,7 +99,11 @@ function gameLoop() {
     aiObj.applyGravity();
     blockingObjectsArray.forEach((box) => {
       if (box.collision) {
-        const {direction, correctionY,correctionX} = collisionCheck(aiObj, box, offsetX);
+        const {
+          direction,
+          correctionY,
+          correctionX
+        } = collisionCheck(aiObj, box, offsetX);
         aiObj.x += correctionX;
         aiObj.y += correctionY;
         if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
@@ -113,10 +118,15 @@ function gameLoop() {
       }
     });
   });
-
-  [...blockingObjectsArray,...aiObjectsArray].forEach((box) => {
+  let animatedArray = [...blockingObjectsArray, ...aiObjectsArray]
+  animatedArray.forEach((box) => {
     if (box.delete) {
-      blockingObjects.splice(blockingObjects.indexOf(box), 1); // remove it
+      if (box.isPowerUp || box.isEnemy) {
+        aiObjects.splice(aiObjects.indexOf(box), 1);
+      } else {
+        blockingObjects.splice(blockingObjects.indexOf(box), 1);
+      }
+
     }
     if (box.update) {
       box.update();
@@ -133,17 +143,26 @@ function gameLoop() {
         } = collisionCheck(mario, box, offsetX);
         mario.x += correctionX;
         mario.y += correctionY;
-        if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
-          mario.velX = 0;
-        } else if (direction === constant.SURFACE.BOTTOM) {
-          mario.grounded = true;
-          mario.jumping = false;
-        } else if (direction === constant.SURFACE.TOP) {
-          const itemToSpawn = box.hit();
-          if (itemToSpawn) {
-            blockingObjects.push(itemToSpawn);
+        if (direction != null) {
+          if (box.isPowerUp) {
+            box.kill();
+            mario.makeBigger();
+
+
+          } else {
+            if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+              mario.velX = 0;
+            } else if (direction === constant.SURFACE.BOTTOM) {
+              mario.grounded = true;
+              mario.jumping = false;
+            } else if (direction === constant.SURFACE.TOP) {
+              const itemToSpawn = box.hit();
+              if (itemToSpawn) {
+                blockingObjects.push(itemToSpawn);
+              }
+              mario.velY *= -0.1;
+            }
           }
-          mario.velY *= -0.1;
         }
       }
     }

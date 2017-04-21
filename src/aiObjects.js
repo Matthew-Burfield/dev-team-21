@@ -1,5 +1,6 @@
 import { ctx, itemSprites } from './constants';
 import { movingSprite } from './sprite';
+import mario from './mario.js';
 
 const aiObjects = [];
 function createMushroom(x,y){
@@ -19,8 +20,10 @@ function createMushroom(x,y){
     spriteSeparator: 0,
     spritFlipOffset: 17});
   mushroom.vely = -1;
+  mushroom.isPowerUp = true;
+  mushroom.activePowerUp = mario.makeBigger;
   return mushroom;
 }
 aiObjects.push(createMushroom(40,40));
-
+console.log(typeof(createMushroom(40,40)));
 export default aiObjects;

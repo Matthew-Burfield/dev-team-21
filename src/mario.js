@@ -1,6 +1,15 @@
-import { movingSprite } from './sprite';
-import { ctx, characterSprites, heightToFloor, AUDIO_MARIO_DIE } from './constants';
-import { disableControls } from './keyHandler';
+import {
+  movingSprite
+} from './sprite';
+import {
+  ctx,
+  characterSprites,
+  heightToFloor,
+  AUDIO_MARIO_DIE
+} from './constants';
+import {
+  disableControls
+} from './keyHandler';
 
 const mario = Object.create(movingSprite);
 mario.isBig = false;
@@ -19,7 +28,7 @@ mario.init({
   x: 40,
   y: heightToFloor,
 });
-mario.kill = function() {
+mario.kill = function () {
   if (!this.isDead) {
     this.isDead = true;
     this.velY = -10;
@@ -45,19 +54,23 @@ mario.render = function (offsetX) {
   );
 };
 
-mario.makeBigger = function() {
+mario.makeBigger = function () {
   this.isBig = true;
-  this.spriteY += 34;
-  this.height *= 2;
+  if (!this.moving) {
+    this.spriteY += 34;
+  }
+  this.height = 32;
   this.spriteSizeOffset = 34;
   this.spritFlipOffset = 33;
   this.speed = 3.0;
 }
 
-mario.makeSmaller = function() {
+mario.makeSmaller = function () {
   this.isBig = false;
-  this.spriteY -= 33;
-  this.height /= 2;
+  if (!this.moving) {
+    this.spriteY -= 17;
+  }
+  this.height = 16;
   this.spriteSizeOffset = 0;
   this.spritFlipOffset = 17;
   this.speed = 2.5;
