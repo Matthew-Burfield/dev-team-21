@@ -1,3 +1,5 @@
+import mario from './mario';
+
 const scoreFormat = '000000';
 const scoreSize = scoreFormat.length; // I.e. a score of 1 will have 5 leading zeros
 
@@ -20,7 +22,11 @@ const levelState = {
     this.coins += coins;
   },
   reduceTime() {
-    this.time -= 1;
+    if (this.time <= 0) {
+      mario.kill();
+    } else {
+      this.time -= 1;
+    }
   },
   getScore() {
     const score = scoreFormat + this.score;

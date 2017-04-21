@@ -129,7 +129,7 @@ movingSprite.update = function () {
 
 
     if (this.y - this.height > canvas.height && !this.isDead) {
-      this.died();
+      this.kill();
     }
 
     this.frameIndex = this.getNextFrameIndex();

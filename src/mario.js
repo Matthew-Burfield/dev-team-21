@@ -18,7 +18,7 @@ mario.init({
   x: 40,
   y: heightToFloor,
 });
-mario.died = function() {
+mario.kill = function() {
   this.isDead = true;
   this.velY = -10;
   this.frameIndex = 6;
@@ -34,7 +34,7 @@ mario.render = function (offsetX) {
     this.spriteY,
     this.width,
     this.height,
-    this.x - offsetX, 
+    this.x - offsetX,
     this.y,
     this.width,
     this.height,

@@ -147,6 +147,80 @@ function bush(startX, bushLength) {
   return arr;
 }
 
+function castleBrick(x, y) {
+  const spriteX = 32;
+  const spriteY = 0;
+  const width = 16;
+  const height = 16;
+  return createTile(width, height, {
+    x,
+    y: y - height,
+    spriteX,
+    spriteY,
+  });
+}
+
+function castleDoor(x) {
+  const doorLowerHalfX = 208;
+  const doorLowerHalfY = 16;
+  const doorTopHalfX = 192;
+  const doorTopHalfY = 16;
+  const width = 16;
+  const height = 16;
+  return [
+    createTile(width, height, {
+      x,
+      y: heightToFloor - height,
+      spriteX: doorLowerHalfX,
+      spriteY: doorLowerHalfY,
+    }),
+    createTile(width, height, {
+      x,
+      y: heightToFloor - (height * 2),
+      spriteX: doorTopHalfX,
+      spriteY: doorTopHalfY,
+    }),
+  ];
+}
+
+function rowOfSingleTile(startX, numTilesHigh, length, spriteX, spriteY) {
+  const width = 16;
+  const height = 16;
+  const arr = [];
+  for (let i = 0; i < length; i += 1) {
+    arr.push(createTile(width, height, {
+      x: startX + (width * i),
+      y: heightToFloor - (height * numTilesHigh),
+      spriteX,
+      spriteY,
+    }));
+  }
+  return arr;
+}
+
+export function castle(startX) {
+  return [
+    castleBrick(startX, heightToFloor),
+    castleBrick(startX + 16, heightToFloor),
+    castleBrick(startX + 48, heightToFloor),
+    castleBrick(startX + 64, heightToFloor),
+    castleBrick(startX, heightToFloor - 16),
+    castleBrick(startX + 16, heightToFloor - 16),
+    castleBrick(startX + 48, heightToFloor - 16),
+    castleBrick(startX + 64, heightToFloor - 16),
+    ...castleDoor(startX + 32),
+    ...rowOfSingleTile(startX, 3, 5, 176, 16),
+    ...rowOfSingleTile(startX + 16, 5, 3, 176, 0),
+
+    createTile(48, 16, {
+      x: startX + 16,
+      y: heightToFloor - 64,
+      spriteX: 192,
+      spriteY: 0,
+    }),
+  ];
+}
+
 function getRepetitiveSprites() {
   const array = [];
   for (let i = 0; i < worldLength; i += 768) {
@@ -162,6 +236,7 @@ function getRepetitiveSprites() {
       ...bush(i + 656, 2),
     ]);
   }
+  array.push(...castle(3232));
   return array;
 }
 
