@@ -3,6 +3,7 @@ import { ctx, characterSprites, heightToFloor, AUDIO_MARIO_DIE } from './constan
 import { disableControls } from './keyHandler';
 
 const mario = Object.create(movingSprite);
+mario.isBig = false;
 
 mario.init({
   context: ctx,
@@ -14,6 +15,7 @@ mario.init({
   spriteStartX: 1,
   spriteStartY: 0,
   spriteSeparator: 1,
+  spritFlipOffset: 17,
   jumpHeight: 45,
   x: 40,
   y: heightToFloor,
@@ -43,5 +45,23 @@ mario.render = function (offsetX) {
     this.height,
   );
 };
+
+mario.makeBigger = function() {
+  this.isBig = true;
+  this.spriteY += 34;
+  this.height *= 2;
+  this.spriteSizeOffset = 34;
+  this.spritFlipOffset = 33;
+  this.speed = 3.0;
+}
+
+mario.makeSmaller = function() {
+  this.isBig = false;
+  this.spriteY -= 33;
+  this.height /= 2;
+  this.spriteSizeOffset = 0;
+  this.spritFlipOffset = 17;
+  this.speed = 2.5;
+}
 
 export default mario;

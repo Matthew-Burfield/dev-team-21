@@ -78,6 +78,8 @@ movingSprite.init = function (options) {
   this.spriteX = options.spriteStartX;
   this.spriteY = options.spriteStartY;
   this.spriteSeparator = options.spriteSeparator;
+  this.spriteSizeOffset = options.spriteSizeOffset || 0;
+  this.spritFlipOffset = options.spritFlipOffset || 0;
   // Canvas position
   this.x = options.x;
   this.y = options.y;
@@ -87,7 +89,7 @@ movingSprite.moveRight = function () {
   if (this.velX < this.speed) {
     this.moving = true;
     this.velX += 1;
-    this.spriteY = 0;
+    this.spriteY = this.spriteSizeOffset;
     this.update();
   }
 };
@@ -95,7 +97,7 @@ movingSprite.moveLeft = function () {
   if (this.velX > -this.speed) {
     this.moving = true;
     this.velX -= 1;
-    this.spriteY = 17;
+    this.spriteY = this.spritFlipOffset + this.spriteSizeOffset;
     this.update();
   }
 };
