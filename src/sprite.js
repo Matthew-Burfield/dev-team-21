@@ -206,6 +206,7 @@ brick.breakBlock = function breakBlock() {
 };
 
 export const questionBlock = Object.create(blockSprite);
+questionBlock.on = true;
 questionBlock.frameIndex = 0;
 questionBlock.numberOfFrames = 1;
 questionBlock.tickCount = 0;
@@ -235,9 +236,11 @@ questionBlock.hit = function () {
   }
   return item;
 };
+questionBlock.flash = function () {
+  questionBlock.on = !questionBlock.on;
+};
 questionBlock.update = function () {
-  console.log(levelState);
-  if (this.isAnimated && levelState.time % 2 === 0) {
+  if (this.isAnimated && questionBlock.on) {
     this.frameIndex = 1;
   } else {
     this.frameIndex = 0;
@@ -253,7 +256,7 @@ questionBlock.update = function () {
     }
   }
 };
-setInterval(questionBlock.flash, 1000);
+setInterval(() => questionBlock.flash(), 500);
 
 export const tileSprite = Object.create(sprite);
 tileSprite.image = tileSprites;
