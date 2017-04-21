@@ -104,9 +104,17 @@ function gameLoop() {
           correctionY,
           correctionX
         } = collisionCheck(aiObj, box, offsetX);
-        aiObj.applyCollisionLogic(direction,
-          correctionY,
-          correctionX);
+        aiObj.x += correctionX;
+        aiObj.y += correctionY;
+        if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+          aiObj.velX = 0;
+        } else if (direction === constant.SURFACE.BOTTOM) {
+          aiObj.grounded = true;
+          aiObj.jumping = false;
+        } else if (direction === constant.SURFACE.TOP) {
+          const itemToSpawn = box.hit();
+          aiObj.velY *= -0.1;
+        }
       }
     });
   });
@@ -133,17 +141,26 @@ function gameLoop() {
           correctionY,
           correctionX
         } = collisionCheck(mario, box, offsetX);
+        mario.x += correctionX;
+        mario.y += correctionY;
         if (direction != null) {
           if (box.isPowerUp) {
             box.kill();
             mario.makeBigger();
+
+
           } else {
-            mario.applyCollisionLogic(direction, correctionY, correctionX, box);
-            if (direction === constant.SURFACE.TOP) {
-              const itemToSpawn = box.hit();
+            if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+              mario.velX = 0;
+            } else if (direction === constant.SURFACE.BOTTOM) {
+              mario.grounded = true;
+              mario.jumping = false;
+            } else if (direction === constant.SURFACE.TOP) {
+              const itemToSpawn = box.hit(mario.isBig);
               if (itemToSpawn) {
                 blockingObjects.push(itemToSpawn);
               }
+              mario.velY *= -0.1;
             }
           }
         }
