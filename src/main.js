@@ -118,6 +118,7 @@ function gameLoop() {
       }
     });
   });
+
   let animatedArray = [...blockingObjectsArray, ...aiObjectsArray]
   animatedArray.forEach((box) => {
     if (box.delete) {
