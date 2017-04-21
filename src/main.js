@@ -117,6 +117,7 @@ function gameLoop() {
           if (itemToSpawn) {
             if (Object.prototype.isPrototypeOf.call(coin, itemToSpawn)) {
               levelState.addToCoins(1);
+              levelState.addToScore(200);
             }
             blockingObjects.push(itemToSpawn);
           }

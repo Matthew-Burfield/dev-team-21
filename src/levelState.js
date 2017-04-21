@@ -15,9 +15,19 @@ const levelState = {
   world: 1,
   stage: 1,
   time: 400,
+  /**
+   * Adds to the total score for the level
+   *
+   * @param {number} score
+   */
   addToScore(score) {
     this.score += score;
   },
+  /**
+   * Adds to the tally of coins collected.
+   *
+   * @param {number} coins
+   */
   addToCoins(coins) {
     this.coins += coins;
   },
