@@ -5,7 +5,8 @@ import {
   ctx,
   characterSprites,
   heightToFloor,
-  AUDIO_MARIO_DIE,SURFACE
+  AUDIO_MARIO_DIE,
+  SURFACE
 } from './constants';
 import {
   disableControls
@@ -13,6 +14,7 @@ import {
 
 const mario = Object.create(movingSprite);
 mario.isBig = false;
+mario.isMario = true;
 
 mario.init({
   context: ctx,
@@ -54,19 +56,21 @@ mario.render = function (offsetX) {
   );
 };
 
-mario.makeBigger = function () {
 
-  this.isBig = true;
-  this.height = 32;
-  this.spriteSizeOffset = 34;
-  this.spritFlipOffset = 33;
+mario.makeBigger = function () {
+  if (!this.isBig) {
+    this.isBig = true;
+    this.height = 32;
+    this.spriteSizeOffset = 34;
+    this.spritFlipOffset = 33;
     if (!this.moving) {
-    this.spriteY = this.spriteSizeOffset;
+      this.spriteY = this.spriteSizeOffset;
+    }
+    if (this.direction == SURFACE.LEFT) {
+      this.spriteY += this.spritFlipOffset;
+    }
+    this.speed = 3.0;
   }
-  if (this.direction == SURFACE.LEFT){
-    this.spriteY += this.spritFlipOffset ;
-  }
-  this.speed = 3.0;
 }
 
 mario.makeSmaller = function () {
@@ -75,10 +79,11 @@ mario.makeSmaller = function () {
   this.height = 16;
   this.spriteSizeOffset = 0;
   this.spritFlipOffset = 17;
-    if (!this.moving) {
+  if (!this.moving) {
     this.spriteY = this.spriteSizeOffset;
-  } if (this.direction == SURFACE.LEFT){
-    this.spriteY += this.spritFlipOffset ;
+  }
+  if (this.direction == SURFACE.LEFT) {
+    this.spriteY += this.spritFlipOffset;
   }
   this.speed = 2.5;
 }

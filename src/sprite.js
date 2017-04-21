@@ -1,4 +1,14 @@
-import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP, gravity, SURFACE } from './constants';
+import {
+  canvas,
+  blockSprites,
+  tileSprites,
+  itemSprites,
+  ctx,
+  AUDIO_COIN,
+  AUDIO_BUMP,
+  gravity,
+  SURFACE
+} from './constants';
 
 const sprite = {
   render() {
@@ -119,14 +129,27 @@ movingSprite.stop = function () {
   this.update();
 };
 
-movingSprite.applyGravity = function() {
-   this.velY += gravity;
+movingSprite.applyGravity = function () {
+  this.velY += gravity;
   if (this.grounded) {
     this.velY = 0;
-    }
+  }
   this.y += this.velY;
+};
 
-}
+movingSprite.applyCollisionLogic = function (direction, correctionX,correctionY,box=null){
+  this.x += correctionX;
+  this.y += correctionY;
+  if (direction === SURFACE.LEFT || direction === SURFACE.RIGHT) {
+    this.velX = 0;
+  } else if (direction === SURFACE.BOTTOM) {
+    this.grounded = true;
+    this.jumping = false;
+  } else if (direction === SURFACE.TOP) {
+    this.velY *= -0.1;
+  }
+};
+
 movingSprite.getNextFrameIndex = function () {
   if (this.numberOfFrames === 0) return this.frameIndex;
   if (this.jumping) {
@@ -151,7 +174,7 @@ movingSprite.update = function () {
   }
 };
 
-movingSprite.kill = function(){
+movingSprite.kill = function () {
   this.delete = true;
 };
 
@@ -192,10 +215,9 @@ blockSprite.update = function () {
     if (this.frameIndex < this.numberOfFrames - 1) {
       // Go to the next frame
       this.frameIndex += 1;
-    } else if(this.gotBroken){
+    } else if (this.gotBroken) {
       this.delete = true;
-    } else
-    {
+    } else {
       this.frameIndex = 0;
     }
   }
@@ -215,8 +237,8 @@ brick.hit = function hit(bigMario = false) {
     AUDIO_BUMP.play();
     this.isHit = true;
     this.velY = -2;
-        if(bigMario){
-          this.breakBlock();
+    if (bigMario) {
+      this.breakBlock();
     }
   }
 };
