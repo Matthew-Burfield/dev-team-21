@@ -19,12 +19,15 @@ mario.init({
   y: heightToFloor,
 });
 mario.kill = function() {
-  this.isDead = true;
-  this.velY = -10;
-  this.frameIndex = 6;
-  this.numberOfFrames = 0;
-  AUDIO_MARIO_DIE.play();
-  disableControls();
+  if (!this.isDead) {
+    this.isDead = true;
+    this.velY = -10;
+    this.velX = 0;
+    this.frameIndex = 6;
+    this.numberOfFrames = 0;
+    AUDIO_MARIO_DIE.play();
+    disableControls();
+  }
 };
 
 mario.render = function (offsetX) {

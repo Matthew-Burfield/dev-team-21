@@ -100,21 +100,24 @@ function gameLoop() {
     }
     box.render();
 
-    if (box.collision) {
-      const { direction, correctionY, correctionX } = collisionCheck(mario, box, offsetX);
-      mario.x += correctionX;
-      mario.y += correctionY;
-      if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
-        mario.velX = 0;
-      } else if (direction === constant.SURFACE.BOTTOM) {
-        mario.grounded = true;
-        mario.jumping = false;
-      } else if (direction === constant.SURFACE.TOP) {
-        const itemToSpawn = box.hit();
-        if (itemToSpawn) {
-          blockingObjects.push(itemToSpawn);
+    // Only do collision detection if mario isn't dead
+    if (!mario.isDead) {
+      if (box.collision) {
+        const { direction, correctionY, correctionX } = collisionCheck(mario, box, offsetX);
+        mario.x += correctionX;
+        mario.y += correctionY;
+        if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+          mario.velX = 0;
+        } else if (direction === constant.SURFACE.BOTTOM) {
+          mario.grounded = true;
+          mario.jumping = false;
+        } else if (direction === constant.SURFACE.TOP) {
+          const itemToSpawn = box.hit();
+          if (itemToSpawn) {
+            blockingObjects.push(itemToSpawn);
+          }
+          mario.velY *= -0.1;
         }
-        mario.velY *= -0.1;
       }
     }
   });
@@ -133,13 +136,15 @@ function gameLoop() {
    * We purposely don't move the camera to the left, as the camera never moved left
    * in the real game.
    */
-  if (mario.x >= deadZone && mario.velX > 0) {
-    offsetX -= mario.velX;
-  } else {
-    mario.x += mario.velX;
-  }
-  if (mario.x < 0) {
-    mario.x = 0;
+  if (!mario.isDead) {
+    if (mario.x >= deadZone && mario.velX > 0) {
+      offsetX -= mario.velX;
+    } else {
+      mario.x += mario.velX;
+    }
+    if (mario.x < 0) {
+      mario.x = 0;
+    }
   }
   mario.y += mario.velY;
   mario.render(offsetX);

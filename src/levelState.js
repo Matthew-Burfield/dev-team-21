@@ -9,6 +9,12 @@ const timeSize = timeFormat.length; // I.e. a score of 1 will have 5 leading zer
 const coinFormat = '00';
 const coinSize = coinFormat.length; // I.e. a score of 1 will have 5 leading zeros
 
+/**
+ * Just set an interval for now for the time countdown, since the game
+ * loads straight away anyway
+ */
+const timeInterval = setInterval(() => levelState.reduceTime(), 1000);
+
 const levelState = {
   score: 0,
   coins: 0,
@@ -24,6 +30,7 @@ const levelState = {
   reduceTime() {
     if (this.time <= 0) {
       mario.kill();
+      clearInterval(timeInterval);
     } else {
       this.time -= 1;
     }
@@ -41,11 +48,5 @@ const levelState = {
     return coins.substr(coins.length - coinSize);
   },
 };
-
-/**
- * Just set an interval for now for the time countdown, since the game
- * loads straight away anyway
- */
-setInterval(() => levelState.reduceTime(), 1000);
 
 export default levelState;
