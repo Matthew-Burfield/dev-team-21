@@ -43,7 +43,7 @@ const TILE_SPRITE = {
   CLOUD_TOP_RIGHT: { x: 32, y: 320 },
   CLOUD_BOTTOM_LEFT: { x: 0, y: 336 },
   CLOUD_BOTTOM_MIDDLE: { x: 16, y: 336 },
-  CLOUD_BOTTOM_RIGHT: { x: 32, y: 336 }
+  CLOUD_BOTTOM_RIGHT: { x: 32, y: 336 },
 };
 
 function createTile(width, height, options) {

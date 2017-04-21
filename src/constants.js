@@ -17,7 +17,7 @@ export const SURFACE = {
   RIGHT: 'RIGHT',
   LEFT: 'LEFT',
   TOP: 'TOP',
-  BOTTOM: 'BOTTOM'
+  BOTTOM: 'BOTTOM',
 };
 
 

@@ -42,7 +42,7 @@ function renderNonBlockingObjects() {
       tile.x,
       tile.y,
       tile.width,
-      tile.height
+      tile.height,
     );
   });
 }

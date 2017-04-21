@@ -37,7 +37,7 @@ mario.render = function (offsetX) {
     this.x - offsetX, 
     this.y,
     this.width,
-    this.height
+    this.height,
   );
 };
 
