@@ -155,6 +155,35 @@ blockSprite.init = function (options) {
   this.velY = 0;
   this.gravity = options.gravity || 0.8;
   this.isHit = false;
+  this.items = options.items || null;
+};
+blockSprite.hit = function () {
+  let item = null;
+  if (!this.isHit) {
+    this.isHit = true;
+    // If this block never had any items, just do a normal bump
+    if (!this.items) {
+      AUDIO_BUMP.load();
+      AUDIO_BUMP.play();
+      this.isHit = true;
+      this.velY = -2;
+    } else
+    // If this block has items, spawn them
+    if (this.items && this.items.length > 0) {
+      // How can I get this item into the blocking array for rendering?
+      item = this.items.pop();
+      item.init(this.x, this.y);
+      this.velY = -2;
+    }
+    // if this block used to have items, but it's now empty, change it to
+    // the static empty immovable block sprite
+    if (this.items && this.items.length === 0) {
+      // this.isAnimated = false;
+      this.spriteX = 128;
+      this.spriteY = 112;
+    }
+  }
+  return item;
 };
 blockSprite.update = function () {
   this.tickCount += 1;
@@ -187,15 +216,15 @@ brick.initBrick = function initBrick(options) {
   this.delete = false;
   this.ticksPerFrame = 2;
 };
-brick.hit = function hit() {
-  // move brick up a little bit
-  if (!this.isHit) {
-    AUDIO_BUMP.load();
-    AUDIO_BUMP.play();
-    this.isHit = true;
-    this.velY = -2;
-  }
-};
+// brick.hit = function hit() {
+//   // move brick up a little bit
+//   if (!this.isHit) {
+//     AUDIO_BUMP.load();
+//     AUDIO_BUMP.play();
+//     this.isHit = true;
+//     this.velY = -2;
+//   }
+// };
 brick.breakBlock = function breakBlock() {
   this.ticksPerFrame = 1;
   this.numberOfFrames = 3;
@@ -215,25 +244,6 @@ questionBlock.initQuestionBlock = function (options) {
   this.init(options);
   this.isAnimated = true;
   this.ticksPerFrame = 31;
-  this.items = options.items || [];
-};
-questionBlock.hit = function () {
-  let item = null;
-  if (!this.isHit) {
-    // If there are items - spawn them
-    if (this.items.length > 0) {
-      // How can I get this item into the blocking array for rendering?
-      item = this.items.pop();
-      item.init(this.x, this.y);
-      this.velY = -2;
-    }
-    this.isHit = true;
-  }
-  if (this.isAnimated && this.items.length === 0) {
-    this.isAnimated = false;
-    this.spriteX = 128;
-  }
-  return item;
 };
 questionBlock.flash = function () {
   questionBlock.on = !questionBlock.on;
