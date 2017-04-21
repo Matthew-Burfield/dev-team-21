@@ -5,6 +5,7 @@ import actionKeyPress from './keyHandler';
 import nonBlockingObjects from './nonBlockingObjects';
 import blockingObjects from './blockingObjects';
 import levelState from './levelState';
+import { coin } from './sprite';
 
 
 /**
@@ -114,6 +115,9 @@ function gameLoop() {
         } else if (direction === constant.SURFACE.TOP) {
           const itemToSpawn = box.hit();
           if (itemToSpawn) {
+            if (Object.prototype.isPrototypeOf.call(coin, itemToSpawn)) {
+              levelState.addToCoins(1);
+            }
             blockingObjects.push(itemToSpawn);
           }
           mario.velY *= -0.1;

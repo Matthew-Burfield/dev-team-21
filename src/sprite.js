@@ -1,5 +1,4 @@
 import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP } from './constants';
-import levelState from './levelState';
 
 const sprite = {
   render() {
