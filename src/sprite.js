@@ -1,4 +1,4 @@
-import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP } from './constants';
+import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP, gravity } from './constants';
 
 const sprite = {
   render() {
@@ -66,7 +66,7 @@ movingSprite.init = function (options) {
   this.image = options.image;
   this.jumping = false;
   this.grounded = false;
-  this.moving = false;
+  this.moving = options.moving || false; //for AI
   this.speed = 2.5;
   this.velX = 0;
   this.velY = 0;
@@ -84,6 +84,7 @@ movingSprite.init = function (options) {
   this.x = options.x;
   this.y = options.y;
   this.collision = true;
+  this.delete = false;
 };
 movingSprite.moveRight = function () {
   if (this.velX < this.speed) {
@@ -114,6 +115,15 @@ movingSprite.stop = function () {
   this.moving = false;
   this.update();
 };
+
+movingSprite.applyGravity = function() {
+   this.velY += gravity;
+  if (this.grounded) {
+    this.velY = 0;
+    }
+  this.y += this.velY;
+
+}
 movingSprite.getNextFrameIndex = function () {
   if (this.numberOfFrames === 0) return this.frameIndex;
   if (this.jumping) {
@@ -138,6 +148,9 @@ movingSprite.update = function () {
   }
 };
 
+movingSprite.kill = function(){
+  this.delete = true;
+};
 
 export const blockSprite = Object.create(sprite);
 blockSprite.width = 16;

@@ -16,7 +16,6 @@ mario.init({
   spriteStartY: 0,
   spriteSeparator: 1,
   spritFlipOffset: 17,
-  jumpHeight: 45,
   x: 40,
   y: heightToFloor,
 });

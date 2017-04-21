@@ -3,8 +3,10 @@ import * as constant from './constants';
 import collisionCheck from './collisionDetection';
 import actionKeyPress from './keyHandler';
 import nonBlockingObjects from './nonBlockingObjects';
+import aiObjects from './aiObjects'
 import blockingObjects from './blockingObjects';
 import levelState from './levelState';
+
 
 
 /**
@@ -84,14 +86,35 @@ function gameLoop() {
   renderText();
 
   mario.velX *= constant.friction;
-  mario.velY += constant.gravity;
   mario.grounded = false;
-
 
   const blockingObjectsArray = blockingObjects.filter(item =>
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
 
-  blockingObjectsArray.forEach((box) => {
+  const aiObjectsArray = aiObjects.filter(item =>
+    (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
+
+  aiObjectsArray.forEach((aiObj) => {
+    aiObj.applyGravity();
+    blockingObjectsArray.forEach((box) => {
+      if (box.collision) {
+        const {direction, correctionY,correctionX} = collisionCheck(aiObj, box, offsetX);
+        aiObj.x += correctionX;
+        aiObj.y += correctionY;
+        if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+          aiObj.velX = 0;
+        } else if (direction === constant.SURFACE.BOTTOM) {
+          aiObj.grounded = true;
+          aiObj.jumping = false;
+        } else if (direction === constant.SURFACE.TOP) {
+          const itemToSpawn = box.hit();
+          aiObj.velY *= -0.1;
+        }
+      }
+    });
+  });
+
+  [...blockingObjectsArray,...aiObjectsArray].forEach((box) => {
     if (box.delete) {
       blockingObjects.splice(blockingObjects.indexOf(box), 1); // remove it
     }
@@ -103,7 +126,11 @@ function gameLoop() {
     // Only do collision detection if mario isn't dead
     if (!mario.isDead) {
       if (box.collision) {
-        const { direction, correctionY, correctionX } = collisionCheck(mario, box, offsetX);
+        const {
+          direction,
+          correctionY,
+          correctionX
+        } = collisionCheck(mario, box, offsetX);
         mario.x += correctionX;
         mario.y += correctionY;
         if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
@@ -121,9 +148,7 @@ function gameLoop() {
       }
     }
   });
-  if (mario.grounded) {
-    mario.velY = 0;
-  }
+  mario.applyGravity();
 
   /**
    * With the panning camera, instead of just updating mario's x position,
@@ -146,12 +171,12 @@ function gameLoop() {
       mario.x = 0;
     }
   }
-  mario.y += mario.velY;
+
   mario.render(offsetX);
   constant.ctx.restore();
   requestAnimationFrame(gameLoop);
 } // End Gameloop
 
 // Start the game loop as soon as the sprite sheet is loaded
-window.addEventListener('load', gameLoop);
 
+window.addEventListener('load', gameLoop);
