@@ -1,4 +1,5 @@
 import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP } from './constants';
+import levelState from './levelState';
 
 const sprite = {
   render() {
@@ -205,6 +206,11 @@ brick.breakBlock = function breakBlock() {
 };
 
 export const questionBlock = Object.create(blockSprite);
+questionBlock.frameIndex = 0;
+questionBlock.numberOfFrames = 1;
+questionBlock.tickCount = 0;
+questionBlock.ticksPerFrame = 31;
+
 questionBlock.initQuestionBlock = function (options) {
   this.init(options);
   this.isAnimated = true;
@@ -219,18 +225,35 @@ questionBlock.hit = function () {
       // How can I get this item into the blocking array for rendering?
       item = this.items.pop();
       item.init(this.x, this.y);
+      this.velY = -2;
     }
     this.isHit = true;
-    this.velY = -2;
   }
   if (this.isAnimated && this.items.length === 0) {
     this.isAnimated = false;
-    this.ticksPerFrame = 2;
     this.spriteX = 128;
-    this.numberOfFrames = 0;
   }
   return item;
 };
+questionBlock.update = function () {
+  console.log(levelState);
+  if (this.isAnimated && levelState.time % 2 === 0) {
+    this.frameIndex = 1;
+  } else {
+    this.frameIndex = 0;
+  }
+
+  if (this.velY) {
+    this.velY += this.gravity;
+    this.y += this.velY;
+    if (this.y >= this.placementY) {
+      this.y = this.placementY;
+      this.velY = 0;
+      this.isHit = false;
+    }
+  }
+};
+setInterval(questionBlock.flash, 1000);
 
 export const tileSprite = Object.create(sprite);
 tileSprite.image = tileSprites;
