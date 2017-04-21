@@ -113,6 +113,7 @@ movingSprite.stop = function () {
   this.update();
 };
 movingSprite.getNextFrameIndex = function () {
+  if (this.numberOfFrames === 0) return this.frameIndex;
   if (this.jumping) {
     return 5;
   }
@@ -125,6 +126,12 @@ movingSprite.update = function () {
   this.tickCount += 1;
   if (this.tickCount > this.ticksPerFrame) {
     this.tickCount = 0;
+
+
+    if (this.y - this.height > canvas.height && !this.isDead) {
+      this.died();
+    }
+
     this.frameIndex = this.getNextFrameIndex();
   }
 };

@@ -1,5 +1,6 @@
 import { movingSprite } from './sprite';
-import { ctx, characterSprites, heightToFloor } from './constants';
+import { ctx, characterSprites, heightToFloor, AUDIO_MARIO_DIE } from './constants';
+import { disableControls } from './keyHandler';
 
 const mario = Object.create(movingSprite);
 
@@ -17,6 +18,14 @@ mario.init({
   x: 40,
   y: heightToFloor,
 });
+mario.died = function() {
+  this.isDead = true;
+  this.velY = -10;
+  this.frameIndex = 6;
+  this.numberOfFrames = 0;
+  AUDIO_MARIO_DIE.play();
+  disableControls();
+};
 
 mario.render = function (offsetX) {
   ctx.drawImage(
@@ -25,7 +34,7 @@ mario.render = function (offsetX) {
     this.spriteY,
     this.width,
     this.height,
-    this.x - offsetX,
+    this.x - offsetX, 
     this.y,
     this.width,
     this.height
