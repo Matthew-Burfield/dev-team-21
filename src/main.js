@@ -156,7 +156,7 @@ function gameLoop() {
               mario.grounded = true;
               mario.jumping = false;
             } else if (direction === constant.SURFACE.TOP) {
-              const itemToSpawn = box.hit();
+              const itemToSpawn = box.hit(mario.isBig);
               if (itemToSpawn) {
                 blockingObjects.push(itemToSpawn);
               }

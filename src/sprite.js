@@ -1,4 +1,4 @@
-import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP, gravity } from './constants';
+import { canvas, blockSprites, tileSprites, itemSprites, ctx, AUDIO_COIN, AUDIO_BUMP, gravity, SURFACE } from './constants';
 
 const sprite = {
   render() {
@@ -70,6 +70,7 @@ movingSprite.init = function (options) {
   this.speed = 2.5;
   this.velX = 0;
   this.velY = 0;
+  this.direction = options.direction | SURFACE.RIGHT;
   // Sprite logic
   this.frameIndex = 0;
   this.tickCount = 0;
@@ -91,6 +92,7 @@ movingSprite.moveRight = function () {
     this.moving = true;
     this.velX += 1;
     this.spriteY = this.spriteSizeOffset;
+    this.direction = SURFACE.RIGHT;
     this.update();
   }
 };
@@ -99,6 +101,7 @@ movingSprite.moveLeft = function () {
     this.moving = true;
     this.velX -= 1;
     this.spriteY = this.spritFlipOffset + this.spriteSizeOffset;
+    this.direction = SURFACE.LEFT;
     this.update();
   }
 };
@@ -189,7 +192,10 @@ blockSprite.update = function () {
     if (this.frameIndex < this.numberOfFrames - 1) {
       // Go to the next frame
       this.frameIndex += 1;
-    } else {
+    } else if(this.gotBroken){
+      this.delete = true;
+    } else
+    {
       this.frameIndex = 0;
     }
   }
@@ -202,15 +208,19 @@ brick.initBrick = function initBrick(options) {
   this.delete = false;
   this.ticksPerFrame = 2;
 };
-brick.hit = function hit() {
+brick.hit = function hit(bigMario = false) {
   // move brick up a little bit
   if (!this.isHit) {
     AUDIO_BUMP.load();
     AUDIO_BUMP.play();
     this.isHit = true;
     this.velY = -2;
+        if(bigMario){
+          this.breakBlock();
+    }
   }
 };
+
 brick.breakBlock = function breakBlock() {
   this.ticksPerFrame = 1;
   this.numberOfFrames = 3;
