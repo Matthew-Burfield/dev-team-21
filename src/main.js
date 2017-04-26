@@ -66,6 +66,9 @@ function renderText() {
   constant.ctx.fillText(levelState.getTime(), (marginLeft + 175) - offsetX, marginTop + fontHeight);
 }
 
+
+
+
 function gameLoop() {
   // handle key and check if mario is moving
   actionKeyPress(mario);
@@ -104,17 +107,20 @@ function gameLoop() {
           correctionY,
           correctionX
         } = collisionCheck(aiObj, box, offsetX);
-        aiObj.x += correctionX;
-        aiObj.y += correctionY;
-        if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
-          aiObj.velX = 0;
-        } else if (direction === constant.SURFACE.BOTTOM) {
-          aiObj.grounded = true;
-          aiObj.jumping = false;
-        } else if (direction === constant.SURFACE.TOP) {
-          const itemToSpawn = box.hit();
-          aiObj.velY *= -0.1;
+        if (direction) {
+          aiObj.applyCollisionLogic(direction, correctionX, correctionY);
         }
+        /*   aiObj.x += correctionX;
+           aiObj.y += correctionY;
+           if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
+             aiObj.velX = 0;
+           } else if (direction === constant.SURFACE.BOTTOM) {
+             aiObj.grounded = true;
+             aiObj.jumping = false;
+           } else if (direction === constant.SURFACE.TOP) {
+             const itemToSpawn = box.hit();
+             aiObj.velY *= -0.1;
+           }*/
       }
     });
   });
@@ -142,26 +148,19 @@ function gameLoop() {
           correctionY,
           correctionX
         } = collisionCheck(mario, box, offsetX);
-        mario.x += correctionX;
-        mario.y += correctionY;
-        if (direction != null) {
+        if (direction) {
           if (box.isPowerUp) {
             box.kill();
             mario.makeBigger();
-
-
           } else {
-            if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
-              mario.velX = 0;
-            } else if (direction === constant.SURFACE.BOTTOM) {
-              mario.grounded = true;
-              mario.jumping = false;
-            } else if (direction === constant.SURFACE.TOP) {
-              const itemToSpawn = box.hit(mario.isBig);
+            let itemToSpawn;
+            mario.applyCollisionLogic(direction, correctionX, correctionY);
+            if (direction == constant.SURFACE.TOP) {
+              box.hit.break = mario.isBig;
+              itemToSpawn = box.hit();
               if (itemToSpawn) {
                 blockingObjects.push(itemToSpawn);
               }
-              mario.velY *= -0.1;
             }
           }
         }

@@ -2,7 +2,7 @@ import { ctx, itemSprites } from './constants';
 import { movingSprite } from './sprite';
 import mario from './mario.js';
 
-const thisects = [];
+const aiObjects = [];
 function createMushroom(x,y){
   const mushroom = Object.create(movingSprite);
   mushroom.init({
@@ -24,6 +24,5 @@ function createMushroom(x,y){
   //mushroom.activePowerUp = POWER.BIGGER;
   return mushroom;
 }
-thisects.push(createMushroom(40,40));
-console.log(typeof(createMushroom(40,40)));
-export default thisects;
+aiObjects.push(createMushroom(220,40));
+export default aiObjects;

@@ -137,7 +137,7 @@ movingSprite.applyGravity = function () {
   this.y += this.velY;
 };
 
-movingSprite.applyCollisionLogic = function (direction, correctionX,correctionY){
+movingSprite.applyCollisionLogic = function (direction, correctionX, correctionY) {
   this.x += correctionX;
   this.y += correctionY;
   if (direction === SURFACE.LEFT || direction === SURFACE.RIGHT) {
@@ -238,9 +238,9 @@ brick.hit = function hit() {
     AUDIO_BUMP.play();
     this.isHit = true;
     this.velY = -2;
-   // if (bigMario) {
-    //  this.breakBlock();
-   // }
+    if (this.hit.break) {
+      this.breakBlock();
+    }
   }
 };
 
@@ -291,5 +291,4 @@ tileSprite.init = function (options) {
   this.spriteX = options.spriteX;
   this.spriteY = options.spriteY;
   this.collision = options.isBlocking || false;
-  this.breakable = options.breakable || false;
 };
