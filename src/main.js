@@ -6,7 +6,10 @@ import nonBlockingObjects from './nonBlockingObjects';
 import aiObjects from './aiObjects'
 import blockingObjects from './blockingObjects';
 import levelState from './levelState';
-import movingSprite from './sprite';
+import {
+  coin,
+  movingSprite
+} from './sprite';
 
 
 
@@ -99,7 +102,7 @@ function gameLoop() {
     (item.x + offsetX + item.width > 0 && item.x + offsetX < constant.canvas.width));
 
   aiObjectsArray.forEach((aiObj) => {
-    aiObj.applyGravity();
+    aiObj.applyPhysics();
     blockingObjectsArray.forEach((box) => {
       if (box.collision) {
         const {
@@ -141,24 +144,28 @@ function gameLoop() {
     box.render();
 
     // Only do collision detection if mario isn't dead
-    if (!mario.isDead) {
-      if (box.collision) {
-        const {
-          direction,
-          correctionY,
-          correctionX
-        } = collisionCheck(mario, box, offsetX);
-        if (direction) {
-          if (box.isPowerUp) {
-            box.kill();
-            mario.makeBigger();
-          } else {
-            let itemToSpawn;
-            mario.applyCollisionLogic(direction, correctionX, correctionY);
-            if (direction == constant.SURFACE.TOP) {
-              box.hit.break = mario.isBig;
-              itemToSpawn = box.hit();
-              if (itemToSpawn) {
+    if (!mario.isDead && box.collision) {
+      const {
+        direction,
+        correctionY,
+        correctionX
+      } = collisionCheck(mario, box, offsetX);
+      if (direction) {
+        if (box.isPowerUp) {
+          box.kill();
+          mario.makeBigger();
+        } else {
+          let itemToSpawn;
+          mario.applyCollisionLogic(direction, correctionX, correctionY);
+          if (direction == constant.SURFACE.TOP) {
+            box.hit.break = mario.isBig;
+            itemToSpawn = box.hit();
+            if (itemToSpawn) {
+              {
+                if (Object.prototype.isPrototypeOf.call(coin, itemToSpawn)) {
+                  levelState.addToCoins(1);
+                  levelState.addToScore(200);
+                }
                 blockingObjects.push(itemToSpawn);
               }
             }
@@ -166,9 +173,9 @@ function gameLoop() {
         }
       }
     }
-  });
-  mario.applyGravity();
 
+  });
+    mario.applyPhysics();
   /**
    * With the panning camera, instead of just updating mario's x position,
    * we only want to update the x position if mario's x position is less that

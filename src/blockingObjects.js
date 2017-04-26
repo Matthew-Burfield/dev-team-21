@@ -28,6 +28,22 @@ function createBrick(x, y) {
   return brickSprite;
 }
 
+function createBrickWithCoins(x, y, numCoins) {
+  const brickSprite = Object.create(brick);
+  const arrayOfCoins = [];
+  for (let i = 0; i < numCoins; i += 1) {
+    arrayOfCoins.push(Object.create(coin));
+  }
+  brickSprite.initBrick({
+    x,
+    y: heightToFloor - (heightToFloor - y),
+    spriteX: 272,
+    spriteY: 112,
+    items: arrayOfCoins,
+  });
+  return brickSprite;
+}
+
 function createBricksInARow(startX, y, numberInARow) {
   const arr = [];
   for (let i = 0; i < numberInARow; i += 1) {
@@ -171,7 +187,7 @@ blockingObjects.push(createBrick(1264, 136));
 blockingObjects.push(...createBricksInARow(1280, 72, 8));
 blockingObjects.push(...createBricksInARow(1456, 72, 3));
 
-blockingObjects.push(createBrick(1503, 136));
+blockingObjects.push(createBrickWithCoins(1503, 136, 12)); // This brick has 12 coins
 blockingObjects.push(createQuestionBlock(1504, 72));
 blockingObjects.push(...createBricksInARow(1600, 136, 2));
 blockingObjects.push(createQuestionBlock(1696, 136));

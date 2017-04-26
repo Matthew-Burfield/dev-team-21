@@ -129,7 +129,7 @@ movingSprite.stop = function () {
   this.update();
 };
 
-movingSprite.applyGravity = function () {
+movingSprite.applyPhysics = function () {
   this.velY += gravity;
   if (this.grounded) {
     this.velY = 0;
@@ -196,6 +196,35 @@ blockSprite.init = function (options) {
   this.velY = 0;
   this.gravity = options.gravity || 0.8;
   this.isHit = false;
+  this.items = options.items || null;
+};
+blockSprite.hit = function () {
+  let item = null;
+  if (!this.isHit) {
+    this.isHit = true;
+    // If this block never had any items, just do a normal bump
+    if (!this.items) {
+      AUDIO_BUMP.load();
+      AUDIO_BUMP.play();
+      this.isHit = true;
+      this.velY = -2;
+    } else
+      // If this block has items, spawn them
+      if (this.items && this.items.length > 0) {
+        // How can I get this item into the blocking array for rendering?
+        item = this.items.pop();
+        item.init(this.x, this.y);
+        this.velY = -2;
+      }
+    // if this block used to have items, but it's now empty, change it to
+    // the static empty immovable block sprite
+    if (this.items && this.items.length === 0) {
+      // this.isAnimated = false;
+      this.spriteX = 128;
+      this.spriteY = 112;
+    }
+  }
+  return item;
 };
 blockSprite.update = function () {
   this.tickCount += 1;
@@ -253,32 +282,38 @@ brick.breakBlock = function breakBlock() {
 };
 
 export const questionBlock = Object.create(blockSprite);
+questionBlock.on = true;
+questionBlock.frameIndex = 0;
+questionBlock.numberOfFrames = 1;
+questionBlock.tickCount = 0;
+questionBlock.ticksPerFrame = 31;
+
 questionBlock.initQuestionBlock = function (options) {
   this.init(options);
   this.isAnimated = true;
   this.ticksPerFrame = 31;
-  this.items = options.items || [];
 };
-questionBlock.hit = function () {
-  let item = null;
-  if (!this.isHit) {
-    // If there are items - spawn them
-    if (this.items.length > 0) {
-      // How can I get this item into the blocking array for rendering?
-      item = this.items.pop();
-      item.init(this.x, this.y);
+questionBlock.flash = function () {
+  questionBlock.on = !questionBlock.on;
+};
+questionBlock.update = function () {
+  if (this.isAnimated && questionBlock.on) {
+    this.frameIndex = 1;
+  } else {
+    this.frameIndex = 0;
+  }
+
+  if (this.velY) {
+    this.velY += this.gravity;
+    this.y += this.velY;
+    if (this.y >= this.placementY) {
+      this.y = this.placementY;
+      this.velY = 0;
+      this.isHit = false;
     }
-    this.isHit = true;
-    this.velY = -2;
   }
-  if (this.isAnimated && this.items.length === 0) {
-    this.isAnimated = false;
-    this.ticksPerFrame = 2;
-    this.spriteX = 128;
-    this.numberOfFrames = 0;
-  }
-  return item;
 };
+setInterval(() => questionBlock.flash(), 500);
 
 export const tileSprite = Object.create(sprite);
 tileSprite.image = tileSprites;
