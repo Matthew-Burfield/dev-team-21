@@ -1,9 +1,10 @@
 import { canvas, worldLength, heightToFloor } from './constants';
 import { tileSprite, brick, questionBlock, blockSprite, coin } from './sprite';
+import {mushroom} from './aiObjects';
 
 const blockingObjects = [];
 
-function createQuestionBlock(x, y) {
+function createQuestionBlock(x, y, itemToSpawn = coin) {
   const questionBlockSprite = Object.create(questionBlock);
   const spriteX = 80;
   const spriteY = 112;
@@ -12,7 +13,7 @@ function createQuestionBlock(x, y) {
     y: heightToFloor - (heightToFloor - y),
     spriteX,
     spriteY,
-    items: [Object.create(coin)],
+    items: [Object.create(itemToSpawn)],
   });
   return questionBlockSprite;
 }
@@ -172,7 +173,7 @@ blockingObjects.push(createQuestionBlock(256, 136));
 blockingObjects.push(createBrick(320, 136));
 blockingObjects.push(createQuestionBlock(336, 136));
 blockingObjects.push(createBrick(352, 136));
-blockingObjects.push(createQuestionBlock(368, 136));
+blockingObjects.push(createQuestionBlock(368, 136, mushroom));
 blockingObjects.push(createBrick(384, 136));
 blockingObjects.push(createQuestionBlock(352, 72));
 blockingObjects.push(...createPipe(448, 1));

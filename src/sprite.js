@@ -7,7 +7,8 @@ import {
   AUDIO_COIN,
   AUDIO_BUMP,
   gravity,
-  SURFACE
+  SURFACE,
+  friction
 } from './constants';
 
 const sprite = {
@@ -81,6 +82,7 @@ movingSprite.init = function (options) {
   this.velX = 0;
   this.velY = 0;
   this.direction = options.direction | SURFACE.RIGHT;
+  this.bumpDirection = null;
   // Sprite logic
   this.frameIndex = 0;
   this.tickCount = 0;
@@ -129,17 +131,20 @@ movingSprite.stop = function () {
   this.update();
 };
 
-movingSprite.applyPhysics = function () {
-  this.velY += gravity;
+movingSprite.applyGravity = function () {
   if (this.grounded) {
     this.velY = 0;
+  } else {
+    this.velY += gravity;
+    this.y += this.velY;
+    this.velX *= friction;
   }
-  this.y += this.velY;
 };
 
-movingSprite.applyCollisionLogic = function (direction, correctionX, correctionY) {
+movingSprite.applyCollisionLogic = function (direction, correctionX, correctionY, ) {
   this.x += correctionX;
   this.y += correctionY;
+  this.bumpDirection = direction;
   if (direction === SURFACE.LEFT || direction === SURFACE.RIGHT) {
     this.velX = 0;
   } else if (direction === SURFACE.BOTTOM) {
@@ -149,6 +154,23 @@ movingSprite.applyCollisionLogic = function (direction, correctionX, correctionY
     this.velY *= -0.1;
   }
 };
+
+movingSprite.changeWalkingDirection = function () {
+  if (this.bumpDirection === SURFACE.RIGHT) {
+    this.direction = SURFACE.LEFT;
+  } else {
+    this.direction = SURFACE.RIGHT
+  }
+}
+
+movingSprite.autoMove = function () {
+  if (this.direction == SURFACE.RIGHT) {
+    this.moveRight();
+  } else {
+    this.moveLeft();
+  }
+  this.x += this.velX;
+}
 
 movingSprite.getNextFrameIndex = function () {
   if (this.numberOfFrames === 0) return this.frameIndex;
@@ -214,18 +236,19 @@ blockSprite.hit = function () {
         // How can I get this item into the blocking array for rendering?
         item = this.items.pop();
         item.init(this.x, this.y);
-        this.velY = -2;
       }
-    // if this block used to have items, but it's now empty, change it to
-    // the static empty immovable block sprite
-    if (this.items && this.items.length === 0) {
-      // this.isAnimated = false;
-      this.spriteX = 128;
-      this.spriteY = 112;
-    }
+    this.velY = -2;
+  }
+  // if this block used to have items, but it's now empty, change it to
+  // the static empty immovable block sprite
+  if (this.items && this.items.length === 0) {
+    // this.isAnimated = false;
+    this.spriteX = 128;
+    this.spriteY = 112;
   }
   return item;
 };
+
 blockSprite.update = function () {
   this.tickCount += 1;
   if (this.tickCount > this.ticksPerFrame) {

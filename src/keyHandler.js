@@ -36,6 +36,6 @@ document.addEventListener('keyup', keyUpHandler);
 
 export function disableControls() {
   document.removeEventListener('keydown', keyDownHandler);
-  document.removeEventListener('keyup', keyUpHandler); 
+  document.removeEventListener('keyup', keyUpHandler);
 }
 

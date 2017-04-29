@@ -15,6 +15,7 @@ import {
 const mario = Object.create(movingSprite);
 mario.isBig = false;
 mario.isMario = true;
+mario.isMario = true;
 
 mario.init({
   context: ctx,
@@ -56,11 +57,11 @@ mario.render = function (offsetX) {
   );
 };
 
-
 mario.makeBigger = function () {
   if (!this.isBig) {
     this.isBig = true;
     this.height = 32;
+    this.y -= 16;
     this.spriteSizeOffset = 34;
     this.spritFlipOffset = 33;
     if (!this.moving) {
@@ -74,18 +75,22 @@ mario.makeBigger = function () {
 }
 
 mario.makeSmaller = function () {
-  this.isBig = false;
-
-  this.height = 16;
-  this.spriteSizeOffset = 0;
-  this.spritFlipOffset = 17;
-  if (!this.moving) {
-    this.spriteY = this.spriteSizeOffset;
+  if (this.isBig) {
+    this.isBig = false;
+    this.height = 16; // preventing falling of block
+    this.spriteSizeOffset = 0;
+    this.spritFlipOffset = 17;
+    if (!this.moving) {
+      this.spriteY = this.spriteSizeOffset;
+    }
+    if (this.direction == SURFACE.LEFT) {
+      this.spriteY += this.spritFlipOffset;
+    }
+    this.speed = 2.5;
   }
-  if (this.direction == SURFACE.LEFT) {
-    this.spriteY += this.spritFlipOffset;
-  }
-  this.speed = 2.5;
 }
+
+
+
 
 export default mario;
