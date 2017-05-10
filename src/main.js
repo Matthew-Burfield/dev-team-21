@@ -155,6 +155,7 @@ function gameLoop() {
   mario.render(offsetX);
   constant.ctx.restore();
   requestAnimationFrame(gameLoop);
+  
 } // End Gameloop
 
 // Start the game loop as soon as the sprite sheet is loaded
