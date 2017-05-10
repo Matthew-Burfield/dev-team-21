@@ -1,15 +1,15 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+// const webpack = require('webpack');
 
 module.exports = {
   devtool: 'cheap-eval-source-map',
   entry: {
-    app: ['./src/main']
+    app: ['./src/main'],
   },
   output: {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/assets/',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   module: {
     rules: [
@@ -19,10 +19,13 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env', 'es2015']
-          }
-        }
-      }
-    ]
-  }
+            presets: [
+              'env',
+              ['es2015', { modules: false, loose: true }],
+            ],
+          },
+        },
+      },
+    ],
+  },
 };

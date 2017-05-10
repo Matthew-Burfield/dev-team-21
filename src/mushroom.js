@@ -1,20 +1,25 @@
-import { itemSprites, canvas, ctx } from './constants';
+import { itemSprites,
+  // canvas,
+  ctx } from './constants';
 
 const mushroom = (function privateMushroom() {
   const width = 16;
   const height = 16;
   const image = itemSprites;
-  const speed = 2.5;
+  // const speed = 2.5;
   const spriteX = 0;
   const spriteY = 0;
-  const numberOfFrames = 2;
+  // const numberOfFrames = 2;
 
-  const init = (x, y) => {
-    this.x = x;
-    this.y = y;
-    this.frameIndex = 0;
-    this.tickCount = 0;
-    this.velX = 0;
+  let x = 0;
+  let y = 0;
+  let frameIndex = 0;
+  let tickCount = 0;
+  let velX = 0;
+
+  const init = (initX, initY) => {
+    x = initX;
+    y = initY;
   };
 
   // const init = (options) => {
@@ -41,58 +46,58 @@ const mushroom = (function privateMushroom() {
   //   this.collision = true;
   // };
 
-  const moveRight = () => {
-    if (this.velX < speed) {
-      this.moving = true;
-      this.velX += 1;
-      this.spriteY = 0;
-      this.update();
-    }
-  };
+  // const moveRight = () => {
+  //   if (this.velX < speed) {
+  //     this.moving = true;
+  //     this.velX += 1;
+  //     this.spriteY = 0;
+  //     this.update();
+  //   }
+  // };
 
-  const moveLeft = () => {
-    if (this.velX > -speed) {
-      this.moving = true;
-      this.velX -= 1;
-      this.spriteY = 17;
-      this.update();
-    }
-  };
+  // const moveLeft = () => {
+  //   if (this.velX > -speed) {
+  //     this.moving = true;
+  //     this.velX -= 1;
+  //     this.spriteY = 17;
+  //     this.update();
+  //   }
+  // };
 
-  const getNextFrameIndex = () => {
-    if (numberOfFrames === 0) return this.frameIndex;
-    if (this.jumping) {
-      return 5;
-    }
-    if (!this.moving || this.frameIndex >= numberOfFrames - 1) {
-      return 0;
-    }
-    return this.frameIndex + 1;
-  };
+  // const getNextFrameIndex = () => {
+  //   if (numberOfFrames === 0) return this.frameIndex;
+  //   if (this.jumping) {
+  //     return 5;
+  //   }
+  //   if (!this.moving || this.frameIndex >= numberOfFrames - 1) {
+  //     return 0;
+  //   }
+  //   return this.frameIndex + 1;
+  // };
 
-  const update = () => {
-    this.tickCount += 1;
-    if (this.tickCount > this.ticksPerFrame) {
-      this.tickCount = 0;
+  // const update = () => {
+  //   this.tickCount += 1;
+  //   if (this.tickCount > this.ticksPerFrame) {
+  //     this.tickCount = 0;
 
 
-      if (this.y - this.height > canvas.height && !this.isDead) {
-        this.kill();
-      }
+  //     if (this.y - this.height > canvas.height && !this.isDead) {
+  //       this.kill();
+  //     }
 
-      this.frameIndex = this.getNextFrameIndex();
-    }
-  };
+  //     this.frameIndex = this.getNextFrameIndex();
+  //   }
+  // };
 
   const render = (offsetX) => {
     ctx.drawImage(
       image,
       spriteX,
-      spriteY + (this.frameIndex * this.height),
+      spriteY + (frameIndex * height),
       width,
       height,
-      this.x - offsetX,
-      this.y,
+      x - offsetX,
+      y,
       width,
       height,
     );
@@ -100,14 +105,14 @@ const mushroom = (function privateMushroom() {
 
   const publicAPI = {
     init,
-    moveRight,
-    moveLeft,
-    getNextFrameIndex,
-    update,
+    // moveRight,
+    // moveLeft,
+    // getNextFrameIndex,
+    // update,
     render,
   };
 
   return publicAPI;
-}());
+});
 
 export default mushroom;
