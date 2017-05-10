@@ -174,7 +174,7 @@ blockingObjects.push(createQuestionBlock(336, 136));
 blockingObjects.push(createBrick(352, 136));
 blockingObjects.push(createQuestionBlock(368, 136));
 blockingObjects.push(createBrick(384, 136));
-blockingObjects.push(createQuestionBlock(352, 72));
+blockingObjects.push(createQuestionBlock(352, 72, mushroom));
 blockingObjects.push(...createPipe(448, 1));
 blockingObjects.push(...createPipe(608, 2));
 blockingObjects.push(...createPipe(912, 2));
