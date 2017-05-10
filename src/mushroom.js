@@ -2,7 +2,7 @@ import { itemSprites,
   // canvas,
   ctx } from './constants';
 
-const mushroom = (function privateMushroom() {
+const mushroom = (function privateMushroom(initX, initY) {
   const width = 16;
   const height = 16;
   const image = itemSprites;
@@ -11,16 +11,11 @@ const mushroom = (function privateMushroom() {
   const spriteY = 0;
   // const numberOfFrames = 2;
 
-  let x = 0;
-  let y = 0;
+  let x = initX;
+  let y = initY;
   let frameIndex = 0;
   let tickCount = 0;
   let velX = 0;
-
-  const init = (initX, initY) => {
-    x = initX;
-    y = initY;
-  };
 
   // const init = (options) => {
   //   this.width = options.width;
@@ -89,7 +84,7 @@ const mushroom = (function privateMushroom() {
   //   }
   // };
 
-  const render = (offsetX) => {
+  const render = (offsetX = 0) => {
     ctx.drawImage(
       image,
       spriteX,
@@ -104,7 +99,9 @@ const mushroom = (function privateMushroom() {
   };
 
   const publicAPI = {
-    init,
+    x,
+    y,
+    width,
     // moveRight,
     // moveLeft,
     // getNextFrameIndex,
