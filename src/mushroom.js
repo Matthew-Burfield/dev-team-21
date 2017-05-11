@@ -17,11 +17,11 @@ const mushroom = {
   // Instance Variables
   init(x, y) {
     this.x = x;
-    this.y = y - this.height - this.height;
+    this.y = y - this.height;
     this.frameIndex = 0;
     this.tickCount = 0;
     this.velX = 0;
-    this.velY = -5;
+    this.velY = -2;
     this.grounded = false;
   },
   updatePosition(xOffset = 0, yOffset = 0) {
@@ -87,9 +87,6 @@ const mushroom = {
       if (this.velY) {
         this.velY += this.gravity;
         this.y += this.velY;
-        if (this.y >= this.placementY) {
-          this.delete = true;
-        }
       }
 
       if (this.frameIndex < this.numberOfFrames - 1) {

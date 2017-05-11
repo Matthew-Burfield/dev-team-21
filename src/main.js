@@ -65,6 +65,13 @@ function renderText() {
   constant.ctx.fillText(levelState.getTime(), (marginLeft + 175) - offsetX, marginTop + fontHeight);
 }
 
+const getOffset = (character) => {
+  if (character === mario) {
+    return offsetX;
+  }
+  return 0;
+};
+
 function gameLoop() {
   // handle key and check if mario is moving
   actionKeyPress(mario);
@@ -112,7 +119,8 @@ function gameLoop() {
     if (!mario.isDead) {
       if (box.collision) {
         movingCharactersArray.forEach((character) => {
-          const { direction, correctionY, correctionX } = collisionCheck(character, box, offsetX);
+          const offset = getOffset(character);
+          const { direction, correctionY, correctionX } = collisionCheck(character, box, offset);
           character.x += correctionX;
           character.y += correctionY;
           if (direction === constant.SURFACE.LEFT || direction === constant.SURFACE.RIGHT) {
