@@ -2,45 +2,41 @@ import { itemSprites,
   // canvas,
   ctx } from './constants';
 
-const mushroom = (function privateMushroom(initX, initY) {
-  const width = 16;
-  const height = 16;
-  const image = itemSprites;
-  // const speed = 2.5;
-  const spriteX = 0;
-  const spriteY = 0;
-  // const numberOfFrames = 2;
+const mushroom = {
+  // Static Variables
+  image: itemSprites,
+  width: 16,
+  height: 16,
+  spriteX: 0,
+  spriteY: 0,
+  ticksPerFrame: 1,
+  numberOfFrames: 2,
+  gravity: 0.8,
+  collision: true,
 
-  let x = initX;
-  let y = initY;
-  let frameIndex = 0;
-  let tickCount = 0;
-  let velX = 0;
-
-  // const init = (options) => {
-  //   this.width = options.width;
-  //   this.height = options.height;
-  //   this.image = options.image;
-  //   this.jumping = false;
-  //   this.grounded = false;
-  //   this.moving = false;
-  //   this.speed = 2.5;
-  //   this.velX = 0;
-  //   this.velY = 0;
-  //   // Sprite logic
-  //   this.frameIndex = 0;
-  //   this.tickCount = 0;
-  //   this.ticksPerFrame = options.ticksPerFrame || 0;
-  //   this.numberOfFrames = options.numberOfFrames || 1;
-  //   this.spriteX = options.spriteStartX;
-  //   this.spriteY = options.spriteStartY;
-  //   this.spriteSeparator = options.spriteSeparator;
-  //   // Canvas position
-  //   this.x = options.x;
-  //   this.y = options.y;
-  //   this.collision = true;
-  // };
-
+  // Instance Variables
+  init(x, y) {
+    this.x = x;
+    this.y = y - this.height - this.height;
+    this.frameIndex = 0;
+    this.tickCount = 0;
+    this.velX = 0;
+    this.velY = -5;
+    this.grounded = false;
+  },
+  updatePosition(xOffset = 0, yOffset = 0) {
+    this.x += xOffset;
+    this.y += yOffset;
+  },
+  updateVelX(offset = 1) {
+    this.velX *= offset;
+  },
+  updateVelY(offset = 0) {
+    this.velY += offset;
+  },
+  ground(isGrounded) {
+    this.grounded = isGrounded;
+  },
   // const moveRight = () => {
   //   if (this.velX < speed) {
   //     this.moving = true;
@@ -83,33 +79,41 @@ const mushroom = (function privateMushroom(initX, initY) {
   //     this.frameIndex = this.getNextFrameIndex();
   //   }
   // };
+  update() {
+    this.tickCount += 1;
+    if (this.tickCount > this.ticksPerFrame) {
+      this.tickCount = 0;
 
-  const render = (offsetX = 0) => {
+      if (this.velY) {
+        this.velY += this.gravity;
+        this.y += this.velY;
+        if (this.y >= this.placementY) {
+          this.delete = true;
+        }
+      }
+
+      if (this.frameIndex < this.numberOfFrames - 1) {
+        // Go to the next frame
+        this.frameIndex += 1;
+      } else {
+        this.frameIndex = 0;
+      }
+    }
+  },
+
+  render() {
     ctx.drawImage(
-      image,
-      spriteX,
-      spriteY + (frameIndex * height),
-      width,
-      height,
-      x - offsetX,
-      y,
-      width,
-      height,
+      this.image,
+      this.spriteX,
+      this.spriteY + (this.frameIndex * this.height),
+      this.width,
+      this.height,
+      this.x,
+      this.y,
+      this.width,
+      this.height,
     );
-  };
-
-  const publicAPI = {
-    x,
-    y,
-    width,
-    // moveRight,
-    // moveLeft,
-    // getNextFrameIndex,
-    // update,
-    render,
-  };
-
-  return publicAPI;
-});
+  },
+};
 
 export default mushroom;

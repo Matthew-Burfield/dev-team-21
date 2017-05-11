@@ -18,7 +18,7 @@ mario.init({
   x: 40,
   y: heightToFloor,
 });
-mario.kill = function() {
+mario.kill = function () {
   if (!this.isDead) {
     this.isDead = true;
     this.velY = -10;

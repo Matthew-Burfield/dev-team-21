@@ -175,7 +175,7 @@ blockingObjects.push(createQuestionBlock(336, 136));
 blockingObjects.push(createBrick(352, 136));
 blockingObjects.push(createQuestionBlock(368, 136));
 blockingObjects.push(createBrick(384, 136));
-blockingObjects.push(createQuestionBlock(352, 72, [mushroom()]));
+blockingObjects.push(createQuestionBlock(352, 72, [Object.create(mushroom)]));
 blockingObjects.push(...createPipe(448, 1));
 blockingObjects.push(...createPipe(608, 2));
 blockingObjects.push(...createPipe(912, 2));
@@ -211,8 +211,6 @@ blockingObjects.push(...createReverseBlockPyramid(2240, 4, 4));
 blockingObjects.push(...createBlockPyramid(2368, 5, 4));
 blockingObjects.push(...createReverseBlockPyramid(2480, 4, 4));
 blockingObjects.push(...createBlockPyramid(2896, 9, 8));
-
-blockingObjects.push(mushroom(60, 60));
 
 
 export default blockingObjects;
